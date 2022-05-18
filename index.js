@@ -129,6 +129,9 @@ class Examiner {
 
 
 function playGame(dlc) {
+    document.getElementById("title").hidden = true;
+    document.getElementById("examiner").hidden = false;
+
     let examiner = new Examiner(dlc["data"]);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
     let question = examiner.GetQuestion();
@@ -136,6 +139,10 @@ function playGame(dlc) {
 
 
     shuffle(question["answers"]);
+
+    
+
+
     interpretData(question["question"], "questionHolder");
     for (let i = 0; i < question["answers"].length; i++) {
         let answer = question["answers"][i];
