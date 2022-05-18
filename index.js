@@ -120,7 +120,7 @@ class Examiner {
         return this.end;
     }
     get GetQuestionCount() {
-        return this.questions.length;
+        return this.questions.length - this.questionIndex + this.questionPool.questions.length;
     }
     FillQuestionPool() {
         while (!this.questionPool.IsFull && this.questionIndex < this.questions.length) {
@@ -182,7 +182,7 @@ function checkAnswers() {
     }
 
     document.getElementById("checkButton").onclick=nextQuestion;
-    document.getElementById("checkButton").innerHTML="Next";
+    document.getElementById("checkButton").innerHTML="Next - " + (examiner.GetQuestionCount) + " to go";
 }
 
 function nextQuestion(){
