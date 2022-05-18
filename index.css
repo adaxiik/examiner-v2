@@ -70,3 +70,10 @@ img {
     border: 5px solid rgb(253, 249, 0);
     transition: border-width 0.1s linear;
 }
+
+#endScreen{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

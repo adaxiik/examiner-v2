@@ -40,21 +40,21 @@ function loadQuestions(contents) {
         questions = JSON.parse(contents);
     }
     catch (e) {
-        alert("Error loading questions: " + e.message);
+        showEndscreen("Error","Could not parse DLC file :(");
         return;
     }
     console.log("Loaded " + questions["name"] + " dlc");
 
     if (questions["data"] == undefined) {
-        alert("Error loading questions: questions not found");
+        showEndscreen("Error","Could not find data in DLC file :(");
         return;
     }
     if (questions["data"].length == 0) {
-        alert("Error loading questions: no questions found");
+        showEndscreen("Error","No questions found in DLC file :(");
         return;
     }
     if (questions["version"] != "1.0") {
-        alert("Error loading questions: version not supported");
+        showEndscreen("Error","Unsupported DLC version :(");
         return;
     }
 
@@ -172,7 +172,8 @@ function checkAnswers() {
         examiner.RemoveCurrentQuestion();
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
-            alert("You have answered all questions correctly!");
+            //showEndscreen("Congratulations!","You have answered all questions correctly!");
+            alert("Congratulations! You have answered all questions correctly!");
             return;
         }
         console.log("All correct");
@@ -183,6 +184,16 @@ function checkAnswers() {
 
     document.getElementById("checkButton").onclick=nextQuestion;
     document.getElementById("checkButton").innerHTML="Next - " + (examiner.GetQuestionCount) + " to go";
+}
+
+function showEndscreen(title, subtitle){
+    document.getElementById("examiner").hidden = true;
+    document.getElementById("title").hidden = true;
+    endScreen = document.getElementById("endScreen");
+    endScreen.hidden = false;
+    document.getElementById("titleText").innerHTML = title;
+    document.getElementById("subtitleText").innerHTML = subtitle;
+    
 }
 
 function nextQuestion(){
