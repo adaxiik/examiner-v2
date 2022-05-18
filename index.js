@@ -69,6 +69,7 @@ class QuestionPool {
         this.questions = [];
         this.size = size;
         this.currentQuestion = 0;
+        this.previousQuestion = 0;
     }
 
     AddQuestion(question) {
@@ -80,7 +81,12 @@ class QuestionPool {
     }
 
     GetRandomQuestion() {
-        this.currentQuestion = Math.floor(Math.random() * this.questions.length);
+        this.currentQuestion;
+        do {
+            this.currentQuestion = Math.floor(Math.random() * this.questions.length);
+        } while (this.currentQuestion == this.previousQuestion && this.questions.length > 1);
+
+        this.previousQuestion = this.currentQuestion;
         return this.questions[this.currentQuestion];
     }
 
@@ -122,54 +128,111 @@ class Examiner {
             this.questionIndex++;
             this.questionPool.AddQuestion(question);
         }
+        if (this.questionIndex >= this.questions.length) {
+            this.end = true;
+        }
     }
-
-
 }
 
+let examiner;
+let question;
+
+function checkAnswers() {
+    let allcorrect = true;
+    for (let i = 0; i < question["answers"].length; i++) {
+        let answer = question["answers"][i];
+        let input = document.getElementById("answer-" + i);
+        //if selected and correct add correct class
+        //if selected and incorrect add wrong class
+        //if not selected and correct add notselected class
+
+        if (answer["selected"]) {
+            if (answer["correct"]) {
+                input.classList.add("correct");
+            }
+            else {
+                input.classList.add("wrong");
+                allcorrect = false;
+            }
+        }
+        else {
+            if (answer["correct"]) {
+                input.classList.add("notselected");
+                allcorrect = false;
+            }
+
+        }
+        if(input.classList.contains("selected")){
+            input.classList.remove("selected");
+        }
+
+    }
+
+    if (allcorrect) {
+        examiner.RemoveCurrentQuestion();
+        console.log("Removed Question ID: " + question["id"]);
+        if (examiner.IsEnd) {
+            alert("You have answered all questions correctly!");
+            return;
+        }
+        console.log("All correct");
+    }
+    else {
+        console.log("Not all correct");
+    }
+
+    document.getElementById("checkButton").onclick=nextQuestion;
+    document.getElementById("checkButton").innerHTML="Next";
+}
+
+function nextQuestion(){
+
+    question = examiner.GetQuestion();
+    shuffle(question["answers"]);
+    console.log(question);
+    console.log("Loaded Question ID: " + question["id"]);
+
+    document.getElementById("questionHolder").innerHTML = "";
+    document.getElementById("answersHolder").innerHTML = "";
+
+    interpretData(question["question"], "questionHolder", -1);
+
+    for (let i = 0; i < question["answers"].length; i++) {
+        question["answers"][i]["selected"] = false;
+        interpretData(question["answers"][i], "answersHolder", i);
+    }
+
+    document.getElementById("checkButton").onclick=checkAnswers;
+    document.getElementById("checkButton").innerHTML="Check";
+}
 
 function playGame(dlc) {
     document.getElementById("title").hidden = true;
     document.getElementById("examiner").hidden = false;
-
-    let examiner = new Examiner(dlc["data"]);
+    examiner = new Examiner(dlc["data"]);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
-    let question = examiner.GetQuestion();
-    console.log(question);
-
-
-    shuffle(question["answers"]);
-
-    
-
-
-    interpretData(question["question"], "questionHolder");
-    for (let i = 0; i < question["answers"].length; i++) {
-        let answer = question["answers"][i];
-        interpretData(answer, "answersHolder");
-    }
-
+    nextQuestion();
 
 }
 
-function interpretData(data, holder) {
+function interpretData(data, holder, id) {
 
     switch (data["type"]) {
         case "text":
-            interpretTextData(data, holder);
+            interpretTextData(data, holder, id);
             break;
         case "image":
-            interpretImageData(data, holder);
+            interpretImageData(data, holder, id);
             break;
         default:
             alert("Error: unknown question type");
             break;
     }
 }
-function addImage(holder, src) {
+function addImage(holder, src, id) {
     let holderElement = document.getElementById(holder);
-    
-    let type = holder=="questionHolder" ? "question" : "answer";
+
+    let type = holder == "questionHolder" ? "question" : "answer";
 
     let container = document.createElement("div");
     container.id = "uk-img-container";
@@ -177,20 +240,38 @@ function addImage(holder, src) {
     holderElement.appendChild(container);
 
     let img = document.createElement("img");
-    img.id = "uk-img";
+    img.id = "answer-" + id;
     img.className = "uk-img " + type;
     img.src = src;
+    if (type == "answer") {
+        img.onclick = function () {
+            select(id);
+        }
+    }
     container.appendChild(img);
 
 }
 
-function interpretTextData(data, holder) {
+function interpretTextData(data, holder, id) {
 
 }
 
-function interpretImageData(data, holder) {
-    addImage(holder, data["src"]);
+function interpretImageData(data, holder, id) {
+    addImage(holder, data["src"], id);
 }
+
+function select(id) {
+    console.log("Selected " + id);
+    if (question["answers"][id]["selected"]) {
+        question["answers"][id]["selected"] = false;
+        document.getElementById("answer-" + id).classList.remove("selected");
+    }
+    else {
+        question["answers"][id]["selected"] = true;
+        document.getElementById("answer-" + id).classList.add("selected");
+    }
+}
+
 
 
 document.getElementById('file-input')
