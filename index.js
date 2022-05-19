@@ -79,6 +79,9 @@ class QuestionPool {
     get IsFull() {
         return this.questions.length >= this.size;
     }
+    get IsEmpty() {
+        return this.questions.length == 0;
+    }
 
     GetRandomQuestion() {
         this.currentQuestion;
@@ -117,7 +120,7 @@ class Examiner {
 
 
     get IsEnd() {
-        return this.end;
+        return this.questionPool.IsEmpty;
     }
     get GetQuestionCount() {
         return this.questions.length - this.questionIndex + this.questionPool.questions.length;
@@ -142,9 +145,6 @@ function checkAnswers() {
     for (let i = 0; i < question["answers"].length; i++) {
         let answer = question["answers"][i];
         let input = document.getElementById("answer-" + i);
-        //if selected and correct add correct class
-        //if selected and incorrect add wrong class
-        //if not selected and correct add notselected class
 
         if (answer["selected"]) {
             if (answer["correct"]) {
@@ -172,8 +172,12 @@ function checkAnswers() {
         examiner.RemoveCurrentQuestion();
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
-            //showEndscreen("Congratulations!","You have answered all questions correctly!");
-            alert("Congratulations! You have answered all questions correctly!");
+            //alert("Congratulations! You have answered all questions correctly!");
+            document.getElementById("checkButton").innerHTML="LET'S GOO";
+            document.getElementById("checkButton").onclick=function(){
+                showEndscreen("Congratulations!","You have answered all questions correctly!");
+            }
+
             return;
         }
         console.log("All correct");
