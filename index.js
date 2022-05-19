@@ -291,3 +291,11 @@ function select(id) {
 
 document.getElementById('file-input')
     .addEventListener('change', readSingleFile, false);
+
+
+document.addEventListener('dragenter',()=>{
+    document.getElementById('uploadButton').classList.add('onDrag');
+})
+document.getElementById('uploadButton').addEventListener('dragleave',()=>{
+    document.getElementById('uploadButton').classList.remove('onDrag');
+});

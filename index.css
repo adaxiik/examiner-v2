@@ -1,8 +1,55 @@
-.upload {
+.upload .dragInfo {
+    font-size: 2.5rem;
+    color: white;
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.upload .dragInfo.line {
+    position: fixed;
+    width: calc(100vw - 3rem);
+    height: calc(100vh - 3rem);
+    transform: none;
+    top: 1rem;
+    left: 1rem;
+    border: 0.5rem dashed white;
+}
+
+.upload .dragInfo .icon svg {
+    display: block;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -150%);
+    width: 5rem;
+}
+
+.upload.onDrag {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #236EBD;
+    box-sizing: border-box;
+    /*border: 5px dashed white;*/
+}
+.upload.onDrag .dragInfo {
+    display: block;
+}
+.upload button{
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+.upload.onDrag button{
+    display: none;
 }
 
 .text {

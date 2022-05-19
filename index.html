@@ -31,7 +31,13 @@
 
         <div id="uploadButton" class="upload uk-light uk-background-secondary" uk-form-custom>
             <input type="file" accept=".dlc" id="file-input">
-            <button class="uk-button uk-button-default uk-button-large" type="button" tabindex="-1">Select</button>
+            <button class="uk-button uk-button-default uk-button-large" type="button" tabindex="-1" onclick="document.getElementById('file-input').click();">Select</button>
+
+            <div class="dragInfo">
+                <span uk-icon="upload" class="icon"></span>
+                <p>Drag and drop a DLC file here</p>
+            </div>
+            <div class="dragInfo line"></div>
         </div>
     </div>    
 
