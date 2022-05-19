@@ -55,5 +55,5 @@ if (fs.existsSync(datasetname))
         }
     }).sort((a,b)=>a.id - b.id);
 
-    fs.writeFileSync("export.dlc", JSON.stringify(datasetExport, null, 4));
+    fs.writeFileSync(datasetname + ".dlc", JSON.stringify(datasetExport, null, 4));
 }
