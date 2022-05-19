@@ -42,14 +42,19 @@
 .upload.onDrag .dragInfo {
     display: block;
 }
-.upload button{
+.upload .uploadOptions{
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.upload.onDrag button{
+.upload.onDrag .uploadOptions{
     display: none;
+}
+.upload .uploadOptions span {
+    display: block;
+    margin-top: 0.5rem;
+    text-align: center;
 }
 
 .text {

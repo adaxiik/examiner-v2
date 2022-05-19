@@ -34,6 +34,24 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
+function VerifyDlc(questions)
+{
+    if (questions["data"] == undefined) {
+        showEndscreen("Error","Could not find data in DLC file :(");
+        return false;
+    }
+    if (questions["data"].length == 0) {
+        showEndscreen("Error","No questions found in DLC file :(");
+        return false;
+    }
+    if (questions["version"] != "1.0") {
+        showEndscreen("Error","Unsupported DLC version :(");
+        return false;
+    }
+
+    return true;
+}
+
 function loadQuestions(contents) {
     var questions;
     try {
@@ -43,20 +61,11 @@ function loadQuestions(contents) {
         showEndscreen("Error","Could not parse DLC file :(");
         return;
     }
-    console.log("Loaded " + questions["name"] + " dlc");
 
-    if (questions["data"] == undefined) {
-        showEndscreen("Error","Could not find data in DLC file :(");
+    if (!VerifyDlc(questions))
         return;
-    }
-    if (questions["data"].length == 0) {
-        showEndscreen("Error","No questions found in DLC file :(");
-        return;
-    }
-    if (questions["version"] != "1.0") {
-        showEndscreen("Error","Unsupported DLC version :(");
-        return;
-    }
+
+    console.log("Loaded " + questions["name"] + " dlc");
 
     var uploadButton = document.getElementById("uploadButton");
     uploadButton.parentNode.removeChild(uploadButton);
@@ -292,6 +301,7 @@ function select(id) {
 document.getElementById('file-input')
     .addEventListener('change', readSingleFile, false);
 
+// Drag and drop area
 
 document.addEventListener('dragenter',()=>{
     document.getElementById('uploadButton').classList.add('onDrag');
@@ -299,3 +309,34 @@ document.addEventListener('dragenter',()=>{
 document.getElementById('uploadButton').addEventListener('dragleave',()=>{
     document.getElementById('uploadButton').classList.remove('onDrag');
 });
+
+function loadFromURL(url){
+
+    console.log("Loading from URL: ", url);
+
+    fetch(url)
+    .then(data=>{
+        data.json()
+        .then(dlc=>{
+            if (VerifyDlc(dlc)) {
+                playGame(dlc);
+            }
+        })
+        .catch((err)=>{
+            showEndscreen("Error","Could not parse DLC file :(");
+        });
+    })
+    .catch((err)=>{
+        showEndscreen("Error","Could not load DLC from URL");
+    });
+}
+// Load file from url
+(function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    let fileUrl = urlParams.get('file');
+
+    if (fileUrl === null)
+        return;
+
+    loadFromURL(fileUrl);
+})();
