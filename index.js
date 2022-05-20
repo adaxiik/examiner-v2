@@ -161,6 +161,7 @@ function checkAnswers() {
             }
             else {
                 input.classList.add("wrong");
+                input.classList.add("uk-animation-shake");
                 allcorrect = false;
             }
         }
