@@ -114,8 +114,16 @@ class Examiner {
         this.end = false;
         this.questionPool = new QuestionPool(5);
 
-        this.FillQuestionPool();
+        this.startTime = new Date();
+        let qListElement = document.getElementById('questionList');
+        questions.forEach((question,key) => {
+            let qElement = document.createElement('div');
+            qElement.innerText = key + 1;
+            qElement.id = 'question-list-item-'+question.id;
+            qListElement.appendChild(qElement);
+        });
 
+        this.FillQuestionPool();
     }
     GetQuestion() {
         if (!this.questionPool.IsFull) {
@@ -180,6 +188,7 @@ function checkAnswers() {
 
     if (allcorrect) {
         examiner.RemoveCurrentQuestion();
+        document.getElementById('question-list-item-'+question.id).classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
             //alert("Congratulations! You have answered all questions correctly!");
@@ -193,6 +202,7 @@ function checkAnswers() {
         console.log("All correct");
     }
     else {
+        document.getElementById('question-list-item-'+question.id).classList.add("wrong");
         console.log("Not all correct");
     }
 
@@ -217,6 +227,8 @@ function nextQuestion(){
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
 
+    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x=>x.classList.remove('active'));
+    document.getElementById("question-list-item-" + question["id"]).classList.add("active");
     document.getElementById("questionHolder").innerHTML = "";
     document.getElementById("answersHolder").innerHTML = "";
 
@@ -234,6 +246,8 @@ function nextQuestion(){
 function playGame(dlc) {
     document.getElementById("title").hidden = true;
     document.getElementById("examiner").hidden = false;
+    document.getElementById('dlc-name').innerText = dlc.name ?? "Examiner v2";
+    document.title = (dlc.name ?? "Unknown DLC") + " - Examiner v2";
     examiner = new Examiner(dlc["data"]);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
     nextQuestion();
@@ -341,3 +355,14 @@ function loadFromURL(url){
 
     loadFromURL(fileUrl);
 })();
+
+// Timer
+setInterval(()=>{
+    if (examiner != null && examiner.startTime != undefined)
+    {
+        let seconds = Math.ceil((Date.now() - examiner.startTime) / 1000);
+        let minutes = Math.floor(seconds / 60);
+        let hours = Math.floor(minutes / 60);
+        document.getElementById('timer').innerText = (hours > 0 ? String(hours).padStart(2,'0') + ' : ' : '') + String(minutes % 60).padStart(2,'0') + " : " + String(seconds % 60).padStart(2, '0');
+    }
+},500);
