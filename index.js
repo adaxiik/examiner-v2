@@ -1,4 +1,4 @@
-https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+//https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
 
@@ -17,9 +17,6 @@ function shuffle(array) {
     return array;
 }
 
-
-
-
 function readSingleFile(e) {
     var file = e.target.files[0];
     if (!file) {
@@ -34,18 +31,19 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
-function VerifyDlc(questions)
-{
+function VerifyDlc(questions) {
     if (questions["data"] == undefined) {
-        showEndscreen("Error","Could not find data in DLC file :(");
+        showEndscreen("Error", "Could not find data in DLC file :(");
         return false;
     }
+
     if (questions["data"].length == 0) {
-        showEndscreen("Error","No questions found in DLC file :(");
+        showEndscreen("Error", "No questions found in DLC file :(");
         return false;
     }
+
     if (questions["version"] != "1.0") {
-        showEndscreen("Error","Unsupported DLC version :(");
+        showEndscreen("Error", "Unsupported DLC version :(");
         return false;
     }
 
@@ -58,7 +56,7 @@ function loadQuestions(contents) {
         questions = JSON.parse(contents);
     }
     catch (e) {
-        showEndscreen("Error","Could not parse DLC file :(");
+        showEndscreen("Error", "Could not parse DLC file :(");
         return;
     }
 
@@ -88,6 +86,7 @@ class QuestionPool {
     get IsFull() {
         return this.questions.length >= this.size;
     }
+
     get IsEmpty() {
         return this.questions.length == 0;
     }
@@ -116,32 +115,35 @@ class Examiner {
 
         this.startTime = new Date();
         let qListElement = document.getElementById('questionList');
-        questions.forEach((question,key) => {
+        questions.forEach((question, key) => {
             let qElement = document.createElement('div');
             qElement.innerText = key + 1;
-            qElement.id = 'question-list-item-'+question.id;
+            qElement.id = 'question-list-item-' + question.id;
             qListElement.appendChild(qElement);
         });
 
         this.FillQuestionPool();
     }
+
     GetQuestion() {
         if (!this.questionPool.IsFull) {
             this.FillQuestionPool();
         }
         return this.questionPool.GetRandomQuestion();
     }
+
     RemoveCurrentQuestion() {
         this.questionPool.RemoveCurrentQuestion();
     }
 
-
     get IsEnd() {
         return this.questionPool.IsEmpty;
     }
+
     get GetQuestionCount() {
         return this.questions.length - this.questionIndex + this.questionPool.questions.length;
     }
+
     FillQuestionPool() {
         while (!this.questionPool.IsFull && this.questionIndex < this.questions.length) {
             var question = this.questions[this.questionIndex];
@@ -178,23 +180,21 @@ function checkAnswers() {
                 input.classList.add("notselected");
                 allcorrect = false;
             }
-
         }
-        if(input.classList.contains("selected")){
+        if (input.classList.contains("selected")) {
             input.classList.remove("selected");
         }
-
     }
 
     if (allcorrect) {
         examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-'+question.id).classList.add("correct");
+        document.getElementById('question-list-item-' + question.id).classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
             //alert("Congratulations! You have answered all questions correctly!");
-            document.getElementById("checkButton").innerHTML="LET'S GOO";
-            document.getElementById("checkButton").onclick=function(){
-                showEndscreen("Congratulations!","You have answered all questions correctly!");
+            document.getElementById("checkButton").innerHTML = "LET'S GOO";
+            document.getElementById("checkButton").onclick = function () {
+                showEndscreen("Congratulations!", "You have answered all questions correctly!");
             }
 
             return;
@@ -202,32 +202,31 @@ function checkAnswers() {
         console.log("All correct");
     }
     else {
-        document.getElementById('question-list-item-'+question.id).classList.add("wrong");
+        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
         console.log("Not all correct");
     }
 
-    document.getElementById("checkButton").onclick=nextQuestion;
-    document.getElementById("checkButton").innerHTML="Next - " + (examiner.GetQuestionCount) + " to go";
+    document.getElementById("checkButton").onclick = nextQuestion;
+    document.getElementById("checkButton").innerHTML = "Next - " + (examiner.GetQuestionCount) + " to go";
 }
 
-function showEndscreen(title, subtitle){
+function showEndscreen(title, subtitle) {
     document.getElementById("examiner").hidden = true;
     document.getElementById("title").hidden = true;
     endScreen = document.getElementById("endScreen");
     endScreen.hidden = false;
     document.getElementById("titleText").innerHTML = title;
     document.getElementById("subtitleText").innerHTML = subtitle;
-    
 }
 
-function nextQuestion(){
+function nextQuestion() {
 
     question = examiner.GetQuestion();
     shuffle(question["answers"]);
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
 
-    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x=>x.classList.remove('active'));
+    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
     document.getElementById("questionHolder").innerHTML = "";
     document.getElementById("answersHolder").innerHTML = "";
@@ -239,8 +238,8 @@ function nextQuestion(){
         interpretData(question["answers"][i], "answersHolder", i);
     }
 
-    document.getElementById("checkButton").onclick=checkAnswers;
-    document.getElementById("checkButton").innerHTML="Check";
+    document.getElementById("checkButton").onclick = checkAnswers;
+    document.getElementById("checkButton").innerHTML = "Check";
 }
 
 function playGame(dlc) {
@@ -248,10 +247,10 @@ function playGame(dlc) {
     document.getElementById("examiner").hidden = false;
     document.getElementById('dlc-name').innerText = dlc.name ?? "Examiner v2";
     document.title = (dlc.name ?? "Unknown DLC") + " - Examiner v2";
+
     examiner = new Examiner(dlc["data"]);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
     nextQuestion();
-
 }
 
 function interpretData(data, holder, id) {
@@ -288,7 +287,6 @@ function addImage(holder, src, id) {
         }
     }
     container.appendChild(img);
-
 }
 
 function interpretTextData(data, holder, id) {
@@ -312,41 +310,40 @@ function select(id) {
 }
 
 
-
 document.getElementById('file-input')
     .addEventListener('change', readSingleFile, false);
 
 // Drag and drop area
 
-document.addEventListener('dragenter',()=>{
+document.addEventListener('dragenter', () => {
     document.getElementById('uploadButton').classList.add('onDrag');
 })
-document.getElementById('uploadButton').addEventListener('dragleave',()=>{
+document.getElementById('uploadButton').addEventListener('dragleave', () => {
     document.getElementById('uploadButton').classList.remove('onDrag');
 });
 
-function loadFromURL(url){
+function loadFromURL(url) {
 
     console.log("Loading from URL: ", url);
 
     fetch(url)
-    .then(data=>{
-        data.json()
-        .then(dlc=>{
-            if (VerifyDlc(dlc)) {
-                playGame(dlc);
-            }
+        .then(data => {
+            data.json()
+                .then(dlc => {
+                    if (VerifyDlc(dlc)) {
+                        playGame(dlc);
+                    }
+                })
+                .catch((err) => {
+                    showEndscreen("Error", "Could not parse DLC file :(");
+                });
         })
-        .catch((err)=>{
-            showEndscreen("Error","Could not parse DLC file :(");
+        .catch((err) => {
+            showEndscreen("Error", "Could not load DLC from URL");
         });
-    })
-    .catch((err)=>{
-        showEndscreen("Error","Could not load DLC from URL");
-    });
 }
 // Load file from url
-(function(){
+(function () {
     const urlParams = new URLSearchParams(window.location.search);
     let fileUrl = urlParams.get('file');
 
@@ -357,12 +354,11 @@ function loadFromURL(url){
 })();
 
 // Timer
-setInterval(()=>{
-    if (examiner != null && examiner.startTime != undefined)
-    {
+setInterval(() => {
+    if (examiner != null && examiner.startTime != undefined) {
         let seconds = Math.ceil((Date.now() - examiner.startTime) / 1000);
         let minutes = Math.floor(seconds / 60);
         let hours = Math.floor(minutes / 60);
-        document.getElementById('timer').innerText = (hours > 0 ? String(hours).padStart(2,'0') + ' : ' : '') + String(minutes % 60).padStart(2,'0') + " : " + String(seconds % 60).padStart(2, '0');
+        document.getElementById('timer').innerText = (hours > 0 ? String(hours).padStart(2, '0') + ' : ' : '') + String(minutes % 60).padStart(2, '0') + " : " + String(seconds % 60).padStart(2, '0');
     }
-},500);
+}, 500);

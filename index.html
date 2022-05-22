@@ -11,7 +11,7 @@
     <title>Examiner V2</title>
     <meta name="description" content="Examiner">
     <meta author="adaxiik">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit.min.css" />
     <link rel="stylesheet" href="index.css?v=2">
@@ -27,13 +27,14 @@
             <h1 class="uk-light uk-text-center  uk-heading-xlarge">Examiner</h1>
             <h3 class="uk-light uk-text-center">Let the game begin</h3>
         </div>
-        
+
 
         <div id="uploadButton" class="upload uk-light uk-background-secondary" uk-form-custom>
             <input type="file" accept=".dlc" id="file-input">
 
             <div class="uploadOptions">
-                <button class="uk-button uk-button-default uk-button-large" type="button" tabindex="-1" onclick="document.getElementById('file-input').click();">Select File</button>
+                <button class="uk-button uk-button-default uk-button-large" type="button" tabindex="-1"
+                    onclick="document.getElementById('file-input').click();">Select File</button>
                 <span>OR</span>
                 <span style="color: white;">Drag and drop file</span>
             </div>
@@ -44,30 +45,33 @@
             </div>
             <div class="dragInfo line"></div>
         </div>
-    </div>    
+    </div>
 
     <div id="examiner" hidden>
-        
+
         <div class="uk-grid-collapse" uk-grid>
             <div class="uk-width-3-4@l uk-width-4-5@xl">
-                
+
                 <span class="section-title" id="dlc-name">Examiner v2</span>
 
                 <div id="questionHolder">
                     <!-- JS: Question -->
                 </div>
-                <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button" onclick="checkAnswers()">Check</button>
-                <hr class="uk-divider-icon" id="qaSplit" >
+                <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button"
+                    onclick="checkAnswers()">Check</button>
+                <hr class="uk-divider-icon" id="qaSplit">
 
                 <div id="answersHolder">
                     <!-- JS: Answers -->
                 </div>
-                
+
                 <br />
             </div>
             <div class="uk-width-1-4@l uk-width-1-5@xl">
                 <span class="section-title darker">Time</span>
-                <span class="timer" id="timer"><!-- JS: Timer --> 00 : 00</span>
+                <span class="timer" id="timer">
+                    <!-- JS: Timer --> 00 : 00
+                </span>
 
                 <span class="section-title darker">Questions</span>
                 <div class="question-list" id="questionList">
@@ -84,11 +88,16 @@
         </div>
     </div>
 
-    <div id="endScreen" hidden>    
-        <h1 id="titleText" class="uk-text-center uk-heading-xlarge uk-light">All questions answered!</h1>
-        <h2 id="subtitleText" class="uk-text-center uk-light">Accuracy: 69% </h2>
-        <button id="restartButton" class="uk-button uk-button-danger uk-width uk-button-large" type="button"onClick="window.location.reload();">Restart</button>
-    </div> 
+    <div id="endScreen" hidden>
+        <h1 id="titleText" class="uk-text-center uk-heading-xlarge uk-light">
+            <!-- JS: title -->
+        </h1>
+        <h2 id="subtitleText" class="uk-text-center uk-light">
+            <!-- JS: subtitle -->
+        </h2>
+        <button id="restartButton" class="uk-button uk-button-danger uk-width uk-button-large" type="button"
+            onClick="window.location.reload();">Restartd</button>
+    </div>
 
 
     <script src="index.js?v=2"></script>
