@@ -31,7 +31,7 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
-const supportedVersions = ["1.0", "1.1"];
+const supportedVersions = ["1.0", "1.2"];
 function VerifyDlc(questions) {
     if (questions["data"] == undefined) {
         showEndscreen("Error", "Could not find data in DLC file :(");
@@ -220,6 +220,8 @@ function showEndscreen(title, subtitle) {
     document.getElementById("subtitleText").innerHTML = subtitle;
 }
 
+
+//TODO: Clean up whole script
 function nextQuestion() {
     document.getElementById("checkButton").hidden = false;
 
@@ -239,7 +241,7 @@ function nextQuestion() {
     interpretData(question["question"], "questionHolder", -1);
 
     // for self assessment questions
-    if(question.hasOwnProperty("type") && question["type"] == "self-assessment") {
+    if (question.hasOwnProperty("type") && question["type"] == "self-assessment") {
         interpretSelfAssessment();
         return;
     }
@@ -253,7 +255,7 @@ function nextQuestion() {
     document.getElementById("checkButton").innerHTML = "Check";
 }
 
-function interpretSelfAssessment(){
+function interpretSelfAssessment() {
     document.getElementById("checkButton").onclick = showAnswer;
     document.getElementById("checkButton").innerHTML = "Show Answer";
 
@@ -359,7 +361,7 @@ function interpretTextData(data, holder, id) {
     let text = document.createElement("p");
     text.id = "answer-" + id;
     text.className = "uk-text " + (holder == "questionHolder" ? "question" : "answer");
-    text.innerText = data["src"];
+    text.innerText = data["content"];
     if (holder == "questionHolder") {
         text.onclick = function () {
             select(id);
