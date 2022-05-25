@@ -143,6 +143,14 @@ img {
     padding: 0.4rem;
 }
 
+.exit-button{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 4rem;
+    padding: 0.0rem;
+}
+
 .timer {
     display: block;
     text-align: center;

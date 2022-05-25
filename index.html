@@ -51,8 +51,16 @@
 
         <div class="uk-grid-collapse" uk-grid>
             <div class="uk-width-3-4@l uk-width-4-5@xl">
-
-                <span class="section-title" id="dlc-name">Examiner v2</span>
+                <div class="section-title"> 
+                    <button class="exit-button uk-button uk-button-danger" type="button"
+                        onclick="window.location.reload();">
+                        <a class="uk-link-reset" uk-icon="icon: sign-out; ratio: 1.2;"></a>
+                    </button>
+                    <span id="dlc-name">
+                        Examiner v2
+                    </span>
+                </div>
+                
 
                 <div id="questionHolder">
                     <!-- JS: Question -->
