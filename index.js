@@ -31,6 +31,7 @@ function readSingleFile(e) {
     reader.readAsText(file);
 }
 
+const supportedVersions = ["1.0", "1.1"];
 function VerifyDlc(questions) {
     if (questions["data"] == undefined) {
         showEndscreen("Error", "Could not find data in DLC file :(");
@@ -42,7 +43,7 @@ function VerifyDlc(questions) {
         return false;
     }
 
-    if (questions["version"] != "1.0") {
+    if (!supportedVersions.includes(questions["version"])) {
         showEndscreen("Error", "Unsupported DLC version :(");
         return false;
     }
@@ -220,11 +221,15 @@ function showEndscreen(title, subtitle) {
 }
 
 function nextQuestion() {
+    document.getElementById("checkButton").hidden = false;
 
     question = examiner.GetQuestion();
+
     shuffle(question["answers"]);
+
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
+
 
     Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
@@ -232,6 +237,12 @@ function nextQuestion() {
     document.getElementById("answersHolder").innerHTML = "";
 
     interpretData(question["question"], "questionHolder", -1);
+
+    // for self assessment questions
+    if(question.hasOwnProperty("type") && question["type"] == "self-assessment") {
+        interpretSelfAssessment();
+        return;
+    }
 
     for (let i = 0; i < question["answers"].length; i++) {
         question["answers"][i]["selected"] = false;
@@ -241,6 +252,58 @@ function nextQuestion() {
     document.getElementById("checkButton").onclick = checkAnswers;
     document.getElementById("checkButton").innerHTML = "Check";
 }
+
+function interpretSelfAssessment(){
+    document.getElementById("checkButton").onclick = showAnswer;
+    document.getElementById("checkButton").innerHTML = "Show Answer";
+
+}
+
+function showAnswer() {
+    document.getElementById("checkButton").hidden = true;
+
+    for (let i = 0; i < question["answers"].length; i++) {
+        interpretData(question["answers"][i], "answersHolder", i);
+    }
+
+    const answersHolder = document.getElementById("answersHolder");
+
+    // add correct and incorrect buttons to check yourself
+    let correctButton = document.createElement("button");
+    correctButton.innerHTML = "<span uk-icon='icon: check; ratio: 5.5'></span>";
+    correctButton.classList.add("uk-button");
+    correctButton.classList.add("uk-button-primary");
+    correctButton.classList.add("uk-width-1-2");
+    correctButton.classList.add("self-assessment-button-correct");
+
+    correctButton.onclick = function () {
+        examiner.RemoveCurrentQuestion();
+        document.getElementById('question-list-item-' + question.id).classList.add("correct");
+        console.log("Removed Question ID: " + question["id"]);
+        if (examiner.IsEnd) {
+            showEndscreen("Congratulations!", "You have answered all questions correctly!");
+            return;
+        }
+        console.log("Correct");
+        nextQuestion();
+    };
+    answersHolder.appendChild(correctButton);
+
+    let incorrectButton = document.createElement("button");
+    incorrectButton.innerHTML = "<span uk-icon='icon: close; ratio: 5.5'></span>";
+    incorrectButton.classList.add("uk-button");
+    incorrectButton.classList.add("uk-button-danger");
+    incorrectButton.classList.add("uk-width-1-2");
+    incorrectButton.classList.add("self-assessment-button-wrong");
+
+    incorrectButton.onclick = function () {
+        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
+        console.log("incorrect");
+        nextQuestion();
+    };
+    answersHolder.appendChild(incorrectButton);
+}
+
 
 function playGame(dlc) {
     document.getElementById("title").hidden = true;
@@ -267,6 +330,8 @@ function interpretData(data, holder, id) {
             break;
     }
 }
+
+
 function addImage(holder, src, id) {
     let holderElement = document.getElementById(holder);
 
@@ -290,6 +355,18 @@ function addImage(holder, src, id) {
 }
 
 function interpretTextData(data, holder, id) {
+    let holderElement = document.getElementById(holder);
+    let text = document.createElement("p");
+    text.id = "answer-" + id;
+    text.className = "uk-text " + (holder == "questionHolder" ? "question" : "answer");
+    text.innerText = data["src"];
+    if (holder == "questionHolder") {
+        text.onclick = function () {
+            select(id);
+        }
+    }
+    holderElement.appendChild(text);
+
 
 }
 

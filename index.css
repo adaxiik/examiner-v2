@@ -64,7 +64,7 @@
     transform: translate(-50%, -50%);
 }
 
-.question {
+img.question {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -73,7 +73,34 @@
 
 }
 
-.answer {
+p.question {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    text-align: center;
+}
+
+p.answer {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    text-align: center;
+}
+
+
+img.answer {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -103,24 +130,38 @@ img {
     }
 }
 
-.answer.selected {
+img.answer.selected {
     border: 5px solid rgb(45, 76, 255);
     transition: border-width 0.1s linear;
 }
 
-.answer.correct {
+img.answer.correct {
     border: 5px solid rgb(0, 255, 0);
     transition: border-width 0.1s linear;
 }
 
-.answer.wrong {
+img.answer.wrong {
     border: 5px solid rgb(255, 0, 0);
     transition: border-width 0.1s linear;
 }
 
-.answer.notselected {
+img.answer.notselected {
     border: 5px solid rgb(253, 249, 0);
     transition: border-width 0.1s linear;
+}
+
+.self-assessment-button-correct{
+    background-color: #2d8d2d;
+    height: 50vh;
+}
+
+.self-assessment-button-correct:focus, .self-assessment-button-correct:hover {
+    background-color: #267926;
+    height: 50vh;
+}
+
+.self-assessment-button-wrong{
+    height: 50vh;
 }
 
 #endScreen{
@@ -144,7 +185,7 @@ img {
 }
 
 .exit-button{
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 4rem;
