@@ -31,6 +31,21 @@ function showEndscreen(title, subtitle) {
     document.getElementById("subtitleText").innerHTML = subtitle;
 }
 
+function showConfirmscreen(origin,text,confirmFn) {
+    document.getElementById("confirmScreen").hidden = false;
+    document.getElementById(origin).hidden = true;
+    document.getElementById("confirmTitle").innerHTML = text;
+    document.getElementById("confirmButton").onclick = function() {
+        document.getElementById("confirmScreen").hidden = true;
+        confirmFn();
+    } 
+    document.getElementById("cancelButton").onclick = function () {
+        document.getElementById("confirmScreen").hidden = true;
+        document.getElementById(origin).hidden = false;
+    }
+
+}
+
 /**
  * @brief Set title of the page and setup screen
  * @param {*} dlcname 

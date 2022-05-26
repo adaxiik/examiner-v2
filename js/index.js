@@ -217,8 +217,11 @@ document.getElementById('uploadButton').addEventListener('dragleave', () => {
     if (fileUrl === null)
         return;
 
-    if (confirm("You are about to load a DLC file from a url.\nAre you sure you trust the source?"))
+    showConfirmscreen("title","You are about to load a DLC file from a url.<br>Are you sure you trust the source?",() => {
         loadFromURL(fileUrl);
+    });
+    // if (confirm("You are about to load a DLC file from a url.\nAre you sure you trust the source?"))
+    //     loadFromURL(fileUrl);
 })();
 
 // Timer

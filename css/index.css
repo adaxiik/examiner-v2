@@ -64,6 +64,23 @@
     transform: translate(-50%, -50%);
 }
 
+#confirmTitle{
+    position: absolute;
+    text-align: center;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.confirmation {
+    position: absolute;
+    text-align: center;
+    display: inline-block;
+    top: 75%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+}
+
 img.question {
     display: block;
     margin-left: auto;
@@ -169,6 +186,15 @@ img.answer.notselected {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+#confirmButton{
+    background-color: #2d8d2d;
+    
+}
+
+#confirmButton:focus, #confirmButton:hover {
+    background-color: #267926;
 }
 
 .section-title.darker {

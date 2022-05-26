@@ -14,7 +14,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit.min.css" />
-    <link rel="stylesheet" href="css/index.css?v=4">
+    <link rel="stylesheet" href="css/index.css?v=10">
 </head>
 
 <body>
@@ -22,7 +22,7 @@
     <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-    <div id="title">
+    <div id="title" hidden>
         <div class="text">
             <h1 class="uk-light uk-text-center  uk-heading-xlarge">Examiner</h1>
             <h3 class="uk-light uk-text-center">Let the game begin</h3>
@@ -51,16 +51,17 @@
 
         <div class="uk-grid-collapse" uk-grid>
             <div class="uk-width-3-4@l uk-width-4-5@xl">
-                <div class="section-title"> 
+                <div class="section-title">
                     <button class="exit-button uk-button uk-button-danger" type="button"
-                        onclick="(function(){if(confirm('Are you sure you want to leave?\nAll your progress will be lost!')){window.location.reload();}})();">
-                        <a class="uk-link-reset" uk-icon="icon: sign-out; ratio: 1.1;"></a>
-                    </button>
+                        onclick="(function(){showConfirmscreen('examiner','Are you sure you want to leave?<br>All your progress will be lost!',function(){window.location.reload();})})()"><a
+                            class="uk-link-reset" uk-icon="icon: sign-out; ratio: 1.1;"></a></button>
+
+
                     <span id="dlc-name">
                         Examiner v2
                     </span>
                 </div>
-                
+
 
                 <div id="questionHolder">
                     <!-- JS: Question -->
@@ -107,10 +108,25 @@
             onClick="window.location.reload();">Restart</button>
     </div>
 
-    <script src="js/utils.js?v=4"></script>
-    <script src="js/examiner.js?v=4"></script>
-    <script src="js/interpret.js?v=4"></script>
-    <script src="js/index.js?v=4"></script>
+    <div id="confirmScreen" hidden>
+        <h1 id="confirmTitle" class="uk-text-center uk-light">
+            <!-- JS: text -->
+        </h1>
+        <p class="confirmation">
+            <button id="cancelButton" style="margin:1em; width: 18vw;" class="uk-button uk-button-danger uk-button"
+                type="button" onClick="window.location.reload();"><span
+                    uk-icon='icon: close; ratio: 3.5'></span></button>
+
+            <button id="confirmButton" style="margin:1em; width: 18vw;" class="uk-button uk-button-primary uk-button "
+                type="button" onClick="window.location.reload();"><span
+                    uk-icon='icon: check; ratio: 3.5'></span></button>
+        </p>
+    </div>
+
+    <script src="js/utils.js?v=10"></script>
+    <script src="js/examiner.js?v=10"></script>
+    <script src="js/interpret.js?v=10"></script>
+    <script src="js/index.js?v=10"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/js/uikit.min.js"
         integrity="sha512-OZ9Sq7ecGckkqgxa8t/415BRNoz2GIInOsu8Qjj99r9IlBCq2XJlm9T9z//D4W1lrl+xCdXzq0EYfMo8DZJ+KA=="
