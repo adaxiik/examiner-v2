@@ -73,7 +73,7 @@ function nextQuestion() {
 
     question = examiner.GetQuestion();
 
-    shuffle(question.answers);
+    
 
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
@@ -92,6 +92,9 @@ function nextQuestion() {
         return;
     }
 
+    // dont shuffle answers for self assessment questions
+    shuffle(question.answers);
+    
     for (let i = 0; i < question["answers"].length; i++) {
         question["answers"][i]["selected"] = false;
         interpretData(question["answers"][i], "answersHolder", i);
