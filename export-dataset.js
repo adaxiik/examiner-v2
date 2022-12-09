@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // author: https://github.com/jakubhyza
 
 const fs = require('fs');
@@ -15,11 +16,11 @@ console.log("Exporting dataset " + datasetname + " into a file " + datasetname +
 
 if (fs.existsSync(datasetname))
 {
-    console.log("Dataset exsists, exporting...");
+    console.log("Dataset exists, exporting...");
 
     var datasetExport = {
         filetype: "examiner-dlc",
-        version: "1.0",
+        version: "1.3",
         name: datasetname,
         data: []
     }
@@ -47,6 +48,7 @@ if (fs.existsSync(datasetname))
 
         return {
             id:  parseInt(questionId),
+            type: "question-with-answers",
             question: {
                 type: "image",
                 src: "data:image/png;base64," + base64_encode(datasetname + "/" + questionId + "/question.png")

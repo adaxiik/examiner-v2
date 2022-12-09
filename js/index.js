@@ -1,4 +1,9 @@
-const supportedVersions =  ["1.0", "1.2"];
+const supportedVersions =  ["1.3"];
+const supportedQuestionTypes = ["self-assessment", "question-with-answers"];
+
+console.log("Currently supported DLC versions: " + supportedVersions);
+console.log("Currently supported question types: " + supportedQuestionTypes);
+
 
 /**
  * @brief Entry point 
@@ -73,70 +78,35 @@ function nextQuestion() {
 
     question = examiner.GetQuestion();
 
-    
-
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
-
 
     Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
 
-    interpretData(question["question"], "questionHolder", -1);
+    // interpretData(question["question"], "questionHolder", -1);
 
-    // for self assessment questions
-    if (question.hasOwnProperty("type") && question["type"] == "self-assessment") {
-        interpretSelfAssessment(showAnswer);
-        return;
-    }
+    // // for self assessment questions
+    // if (question.hasOwnProperty("type") && question["type"] == "self-assessment") {
+    //     interpretSelfAssessment(showAnswer);
+    //     return;
+    // }
+    interpretQuestion(question);
 
     // dont shuffle answers for self assessment questions
-    shuffle(question.answers);
+    // shuffle(question.answers);
     
-    for (let i = 0; i < question["answers"].length; i++) {
-        question["answers"][i]["selected"] = false;
-        interpretData(question["answers"][i], "answersHolder", i);
-    }
+    // for (let i = 0; i < question["answers"].length; i++) {
+    //     question["answers"][i]["selected"] = false;
+    //     interpretData(question["answers"][i], "answersHolder", i);
+    // }
 
-    document.getElementById("checkButton").onclick = checkAnswers;
-    document.getElementById("checkButton").innerHTML = "Check";
+    
 }
 
-/**
- * @brief show answer function for self assessment questions
- */
-function showAnswer() {
-    hideCheckButton();
 
-    for (let i = 0; i < question["answers"].length; i++) {
-        interpretData(question["answers"][i], "answersHolder", i);
-    }
-
-    const answersHolder = document.getElementById("answersHolder");
-
-    const correctButtonFn = function () {
-        examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-' + question.id).classList.add("correct");
-        console.log("Removed Question ID: " + question["id"]);
-        if (examiner.IsEnd) {
-            showEndscreen("Congratulations!", "You have answered all questions correctly!");
-            return;
-        }
-        console.log("Correct");
-        nextQuestion();
-    };
-    answersHolder.appendChild(createCorrectBtn(correctButtonFn));
-
-    const incorrectButtonFn = function () {
-        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
-        console.log("incorrect");
-        nextQuestion();
-    };
-
-    answersHolder.appendChild(createIncorrectBtn(incorrectButtonFn));
-}
 
 /**
  * @brief Checks the answers and shows the correct answer

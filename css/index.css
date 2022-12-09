@@ -167,6 +167,28 @@ img.answer.notselected {
     transition: border-width 0.1s linear;
 }
 
+p.answer.selected {
+    border: 5px solid rgb(45, 76, 255);
+    transition: border-width 0.1s linear;
+}
+
+p.answer.correct {
+    border: 5px solid rgb(0, 255, 0);
+    transition: border-width 0.1s linear;
+}
+
+p.answer.wrong {
+    border: 5px solid rgb(255, 0, 0);
+    transition: border-width 0.1s linear;
+}
+
+p.answer.notselected {
+    border: 5px solid rgb(253, 249, 0);
+    transition: border-width 0.1s linear;
+}
+
+
+
 .self-assessment-button-correct{
     background-color: #2d8d2d;
     height: 50vh;

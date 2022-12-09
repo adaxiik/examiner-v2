@@ -17,9 +17,24 @@ function VerifyDlc(questions) {
     }
 
     if (!supportedVersions.includes(questions["version"])) {
-        showEndscreen("Error", "Unsupported DLC version :(");
+        showEndscreen("Error", "Unsupported DLC version :(<br><br>Take a look at <a href='https://github.com/adaxiik/examiner-v2/releases/tag/release'>releases</a> for supported versions");
         return false;
     }
+    // each question in data must contains "type"
+    for (let i = 0; i < questions["data"].length; i++) {
+        var qtype = questions["data"][i]["type"];
+        if (qtype == undefined) {
+            showEndscreen("Error", "Could not find type in question with id " + questions["data"][i]["id"] + " :(");
+            return false;
+        }
+        if (!supportedQuestionTypes.includes(qtype)) {
+            showEndscreen("Error", "Unsupported question type in question with id " + questions["data"][i]["id"] + " :(");
+            return false;
+        }
+    }
+
+
+
 
     return true;
 }
