@@ -96,7 +96,7 @@ function nextQuestion() {
     interpretQuestion(question);
 
     // dont shuffle answers for self assessment questions
-    // shuffle(question.answers);
+    // 
     
     // for (let i = 0; i < question["answers"].length; i++) {
     //     question["answers"][i]["selected"] = false;
