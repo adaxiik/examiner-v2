@@ -18,6 +18,38 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
 
 ```json
 {
+    "id": .. ,
+    "type": .. ,
+    "question": {
+        ..
+    },
+    "answers": [
+        ..
+    ]
+ }
+```
+
+- `id` is unique question id, recommended to use 0,1...
+- `type` is a type of question, can be `self-assessment` or `question-with-answers`
+
+## For type `question-with-answers`:
+
+### `question` is an object with the following structure:
+- `type` (text/image)
+- `content` or `src`, depending on the type
+
+### `answers` is an array of objects with the following structure:
+- `type` (text/image)
+- `content` or `src`, depending on the type
+- `correct` (true/false)
+    
+## For type `self-assessment`:
+- same as `question-with-answers`, but without `correct` field in `answers`
+
+# Example
+
+```json
+{
     "filetype": "examiner-dlc",
     "version": "1.3",
     "name": "example",
