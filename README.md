@@ -131,3 +131,5 @@ Input file has following structure:
 + Budapest
 ```
 Output is displayed above.
+
+See [example input](example/example.txt) and [example output](example/example.dlc).
