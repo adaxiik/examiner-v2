@@ -94,7 +94,7 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
                 },
                 {
                     "type": "text",
-                    "content": "Ko\u0161ice",
+                    "content": "Kosice",
                     "correct": false
                 },
                 {
