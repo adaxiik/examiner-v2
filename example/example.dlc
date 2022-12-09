@@ -1,7 +1,7 @@
 {
     "filetype": "examiner-dlc",
     "version": "1.3",
-    "name": "example",
+    "name": "example/example",
     "data": [
         {
             "id": 1,
@@ -55,6 +55,31 @@
         },
         {
             "id": 3,
+            "type": "question-with-answers",
+            "question": {
+                "type": "text",
+                "content": "What is the capital of Poland?"
+            },
+            "answers": [
+                {
+                    "type": "text",
+                    "content": "Warsaw",
+                    "correct": true
+                },
+                {
+                    "type": "text",
+                    "content": "Krak\u00f3w",
+                    "correct": false
+                },
+                {
+                    "type": "text",
+                    "content": "Wroc\u0142aw",
+                    "correct": false
+                }
+            ]
+        },
+        {
+            "id": 4,
             "type": "self-assessment",
             "question": {
                 "type": "text",

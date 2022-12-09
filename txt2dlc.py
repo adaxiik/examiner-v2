@@ -25,6 +25,8 @@ def main():
     with open(sys.argv[1], 'r') as f:
         lines = f.readlines()
 
+    lines = [line.strip() for line in lines]    
+
     result = {}
     result['filetype'] = 'examiner-dlc'
     result['version'] = '1.3'
@@ -35,12 +37,20 @@ def main():
     while index < len(lines):
         line = lines[index]
         if line.startswith('#'):
-            index += ParseQuestion(lines, index, result)
+            index = ParseQuestion(lines, index, result)
         elif line.startswith('@'):
-            index += ParseSelfAssessment(lines, index, result)
-        else:   
-            raise Exception("Unknown line type: " + line)
-        index += 1
+            index = ParseSelfAssessment(lines, index, result)
+        else:
+            if(not line):
+                index += 1
+                continue
+            print("Warning: Unknown line:")
+            print(">>", lines[index-1])
+            print(">>",lines[index])
+            print(">>",lines[index+1])
+            index += 1
+
+
 
     with open(result['name'] + '.dlc', 'w') as f:
         json.dump(result, f, indent=4)
@@ -56,7 +66,7 @@ def ParseQuestion(lines, index, result):
     question['question']['content'] = lines[index][1:].strip()
     question['answers'] = []
     index += 1
-    while index < len(lines) and lines[index].startswith('+') or lines[index].startswith('-'):
+    while index < len(lines) and (lines[index].startswith('+') or lines[index].startswith('-')):
         answer = {}
         answer['type'] = 'text'
         answer['content'] = lines[index][1:].strip()
