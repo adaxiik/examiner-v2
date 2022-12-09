@@ -11,7 +11,15 @@ function base64_encode(file) {
     return new Buffer.from(bitmap).toString('base64');
 }
 
+if(process.argv.length < 3)
+{
+    console.log("Usage: export-dataset.js datasetname [id_offset]");
+    return;
+}
+
 var datasetname = process.argv[2];
+var idOffset = process.argv.length > 3 ? parseInt(process.argv[3]) : 0;
+
 console.log("Exporting dataset " + datasetname + " into a file " + datasetname + ".dlc");
 
 if (fs.existsSync(datasetname))
@@ -47,7 +55,7 @@ if (fs.existsSync(datasetname))
         });
 
         return {
-            id:  parseInt(questionId),
+            id:  parseInt(questionId) + idOffset,
             type: "question-with-answers",
             question: {
                 type: "image",

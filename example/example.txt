@@ -1,0 +1,17 @@
+# What is the capital of Czech Republic?
+- Ostrava
++ Prague
+- Brno
+
+# What is the capital of Slovakia?
++ Bratislava
+- Košice
+- Nitra
+
+# What is the capital of Poland?
++ Warsaw
+- Kraków
+- Wrocław
+
+@ What is the capital of Hungary?
++ Budapest

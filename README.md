@@ -18,51 +18,23 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
 
 ```json
 {
-    "id": .. ,
-    "type": .. ,
-    "question": {
-        ..
-    },
-    "answers": [
-        ..
-    ]
- }
-```
-
-- `id` is unique question id, recommended to use 0,1...
-- `type` is a type of question, can be `self-assessment` or `question-with-answers`
-
-## For type `question-with-answers`:
-
-### `question` is an object with the following structure:
-- `type` (text/image)
-- `content` or `src`, depending on the type
-
-### `answers` is an array of objects with the following structure:
-- `type` (text/image)
-- `content` or `src`, depending on the type
-- `correct` (true/false)
-    
-## For type `self-assessment`:
-- same as `question-with-answers`, but without `correct` field in `answers`
-
-
-# Example
-
-```json
-{
     "filetype": "examiner-dlc",
     "version": "1.3",
-    "name": "Example",
+    "name": "example",
     "data": [
         {
-            "id": 0,
+            "id": 1,
             "type": "question-with-answers",
             "question": {
                 "type": "text",
                 "content": "What is the capital of Czech Republic?"
             },
             "answers": [
+                {
+                    "type": "text",
+                    "content": "Ostrava",
+                    "correct": false
+                },
                 {
                     "type": "text",
                     "content": "Prague",
@@ -72,16 +44,11 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
                     "type": "text",
                     "content": "Brno",
                     "correct": false
-                },
-                {
-                    "type": "text",
-                    "content": "Ostrava",
-                    "correct": false
                 }
             ]
         },
         {
-            "id": 1,
+            "id": 2,
             "type": "question-with-answers",
             "question": {
                 "type": "text",
@@ -95,7 +62,7 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
                 },
                 {
                     "type": "text",
-                    "content": "Košice",
+                    "content": "Ko\u0161ice",
                     "correct": false
                 },
                 {
@@ -106,26 +73,61 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
             ]
         },
         {
-            "id": 2,
+            "id": 3,
             "type": "self-assessment",
             "question": {
                 "type": "text",
-                "content": "What is the capital of Poland?"
+                "content": "What is the capital of Hungary?"
             },
             "answers": [
                 {
                     "type": "text",
-                    "content": "Warsaw"
-                },
-                {
-                    "type": "text",
-                    "content": "Krakow"
-                },
-                {
-                    "type": "text",
-                    "content": "Wroclaw"
+                    "content": "Budapest"
                 }
             ]
         }
     ]
 }
+```
+
+# Text to DLC tool
+`txt2dlc.py` is a simple tool for converting text files to DLC files. 
+
+## Usage
+```sh
+./txt2dlc.py <input file>
+```
+
+## Input file structure
+Input file has following structure:
+```
+# question
++ correct answer
+- wrong answer
+- wrong answer
+
+@ self-assessment question
++ correct answer
+```
+
+## Example
+```
+# What is the capital of Czech Republic?
+- Ostrava
++ Prague
+- Brno
+
+# What is the capital of Slovakia?
++ Bratislava
+- Košice
+- Nitra
+
+# What is the capital of Poland?
++ Warsaw
+- Kraków
+- Wrocław
+
+@ What is the capital of Hungary?
++ Budapest
+```
+Output is displayed above.

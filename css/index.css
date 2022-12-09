@@ -187,6 +187,11 @@ p.answer.notselected {
     transition: border-width 0.1s linear;
 }
 
+p.answer:hover {
+    cursor: pointer;
+    color: rgb(45, 76, 255);
+}
+
 
 
 .self-assessment-button-correct{
