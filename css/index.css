@@ -114,6 +114,7 @@ p.answer {
     font-weight: bold;
 
     text-align: center;
+    padding: 0.3em;
 }
 
 
@@ -168,28 +169,52 @@ img.answer.notselected {
 }
 
 p.answer.selected {
-    border: 5px solid rgb(45, 76, 255);
-    transition: border-width 0.1s linear;
+    box-shadow: inset 0 0 0 5px rgb(45, 76, 255);
+    transition: box-shadow 0.1s linear;
+    border: 1px solid transparent;
 }
 
 p.answer.correct {
-    border: 5px solid rgb(0, 255, 0);
-    transition: border-width 0.1s linear;
+    box-shadow: inset 0 0 0 5px rgb(0, 255, 0);
+    transition: box-shadow 0.1s linear;
+    border: 1px solid transparent;
 }
 
 p.answer.wrong {
-    border: 5px solid rgb(255, 0, 0);
-    transition: border-width 0.1s linear;
+    box-shadow: inset 0 0 0 5px rgb(255, 0, 0);
+    transition: box-shadow 0.1s linear;
+    border: 1px solid transparent;
 }
 
 p.answer.notselected {
-    border: 5px solid rgb(253, 249, 0);
-    transition: border-width 0.1s linear;
+    box-shadow: inset 0 0 0 5px rgb(253, 249, 0);
+    transition: box-shadow 0.1s linear;
+    border: 1px solid transparent;
 }
 
 p.answer:hover {
     cursor: pointer;
     color: rgb(45, 76, 255);
+}
+
+p.answer.selected:hover {
+    cursor: pointer;
+    color: rgb(45, 76, 255);
+}
+
+p.answer.correct:hover {
+    cursor: pointer;
+    color: rgb(0, 255, 0);
+}
+
+p.answer.wrong:hover {
+    cursor: pointer;
+    color: rgb(255, 0, 0);
+}
+
+p.answer.notselected:hover {
+    cursor: pointer;
+    color: rgb(253, 249, 0);
 }
 
 
