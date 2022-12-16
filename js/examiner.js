@@ -106,7 +106,7 @@ class Examiner {
     }
 
     get IsEnd() {
-        return this.questionPool.IsEmpty;
+        return this.end && this.questionPool.IsEmpty;
     }
 
     get GetQuestionCount() {

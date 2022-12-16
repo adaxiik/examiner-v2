@@ -12,6 +12,7 @@ function interpretQuestion(question){
             checkbtn.innerHTML = "Show Answer";
             break;
         case "question-with-answers":
+            shuffle(question.answers);
             checkbtn.onclick = checkAnswers;
             checkbtn.innerHTML = "Check";
             addAnswersToHolder(question["answers"]);
@@ -26,7 +27,6 @@ function interpretQuestion(question){
 
 function addQuestionToholder(questiondata){
     const qholder = document.getElementById("questionHolder");
-    shuffle(question.answers);
     switch (questiondata["type"]) {
         case "text":
             addTextToHolder(qholder, questiondata["content"]);
