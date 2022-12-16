@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
+import base64
 import sys
 import os
 import json
 
 
 QUESTION_TYPES = {'#': 'question-with-answers', '@': 'self-assessment'}
+ANSWER_TYPES = {'+': 'correct_text', '-': 'incorrect_text', 'o': 'correct_image', 'x': 'incorrect_image'}
+_START_WITH_ANSWER = ('+', '-', 'x', 'o')
 
 _i = 0
 def aiota(reset=False):
@@ -57,6 +60,12 @@ def main():
 
     print("Done!")
 
+def LoadImage(path: str) -> str:
+    contnet = "data:image/png;base64,"
+    with open(path, 'rb') as f:
+        contnet += base64.b64encode(f.read()).decode('utf-8')
+    return contnet
+
 def ParseQuestion(lines, index, result):
     question = {}
     question['id'] = aiota()
@@ -66,11 +75,23 @@ def ParseQuestion(lines, index, result):
     question['question']['content'] = lines[index][1:].strip()
     question['answers'] = []
     index += 1
-    while index < len(lines) and (lines[index].startswith('+') or lines[index].startswith('-')):
+    while index < len(lines) and lines[index].startswith(_START_WITH_ANSWER):
         answer = {}
-        answer['type'] = 'text'
-        answer['content'] = lines[index][1:].strip()
-        answer['correct'] = lines[index].startswith('+')
+        if(lines[index].startswith('+') or lines[index].startswith('-')):
+            answer['type'] = 'text'
+            answer['content'] = lines[index][1:].strip()
+            answer['correct'] = lines[index].startswith('+')
+        elif (lines[index].startswith('x') or lines[index].startswith('o')):
+            answer['type'] = 'image'
+            answer['src'] = LoadImage(lines[index][1:].strip())
+            answer['correct'] = lines[index].startswith('o')
+        else:
+            print("Warning: Unknown answer line:")
+            print(">>", lines[index-1])
+            print(">>",lines[index])
+            print(">>",lines[index+1])
+            index += 1
+            continue
         question['answers'].append(answer)
         index += 1
     result['data'].append(question)
@@ -86,10 +107,22 @@ def ParseSelfAssessment(lines, index, result):
     question['question']['content'] = lines[index][1:].strip()
     question['answers'] = []
     index += 1
-    while index < len(lines) and lines[index].startswith('+'):
+    while index < len(lines) and lines[index].startswith(_START_WITH_ANSWER):
         answer = {}
-        answer['type'] = 'text'
-        answer['content'] = lines[index][1:].strip()
+        if(lines[index].startswith('+') or lines[index].startswith('-')):
+            answer['type'] = 'text'
+            answer['content'] = lines[index][1:].strip()
+            
+        elif (lines[index].startswith('x') or lines[index].startswith('o')):
+            answer['type'] = 'image'
+            answer['src'] = LoadImage(lines[index][1:].strip())
+        else:
+            print("Warning: Unknown answer line:")
+            print(">>", lines[index-1])
+            print(">>",lines[index])
+            print(">>",lines[index+1])
+            index += 1
+            continue
         question['answers'].append(answer)
         index += 1
     result['data'].append(question)
