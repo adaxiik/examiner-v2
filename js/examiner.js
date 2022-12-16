@@ -76,11 +76,11 @@ class QuestionPool {
 }
 
 class Examiner {
-    constructor(questions) {
+    constructor(questions, poolsize = 5) {
         this.questions = shuffle(questions);
         this.questionIndex = 0;
         this.end = false;
-        this.questionPool = new QuestionPool(5);
+        this.questionPool = new QuestionPool(poolsize);
 
         this.startTime = new Date();
         let qListElement = document.getElementById('questionList');

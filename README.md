@@ -11,6 +11,7 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
     "filetype": "examiner-dlc",
     "version": "1.3",
     "name": ... ,
+    "poolsize" : ... , // optional (default: 5)
     "data": []
 }
 ```

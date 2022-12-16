@@ -63,7 +63,14 @@ let question;
 function playGame(dlc) {
     showExaminer(dlc.name);
 
-    examiner = new Examiner(dlc.data);
+    poolsize = 5
+    if(dlc.hasOwnProperty("poolsize") && dlc.poolsize > 0)
+        poolsize = dlc.poolsize;
+
+    console.log("DLC version: " + dlc.version);
+    console.log("Poolsize: " + poolsize);
+
+    examiner = new Examiner(dlc.data, poolsize);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
     nextQuestion();
 }
