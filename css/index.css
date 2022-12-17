@@ -227,6 +227,10 @@ p.answer.notselected:hover {
     padding: 15px 0 15px 0;
 }
 
+#answersHolder .uk-icon {
+    max-width: 15%;
+}
+
 .self-assessment-button-correct {
     background-color: #2d8d2d;
     height: 5vw;
