@@ -229,6 +229,8 @@ p.answer.notselected:hover {
 
 #answersHolder .uk-icon {
     max-width: 15%;
+    display: block;
+    margin: 0 auto;
 }
 
 .self-assessment-button-correct {
