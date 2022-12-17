@@ -53,7 +53,7 @@ function addAnswersToHolder(answers){
                 addImageToHolder(aholder, answers[i]["src"], true, i);
                 break;
             default:
-                alert("Error: unknown answer type");
+                alert("Error: unknown answer type - addAnswersToHolder");
                 break;
         }
     }
@@ -73,6 +73,12 @@ function addTextToHolder(holder, text, isAnswer = false, id = -1){
         container.classList.add("uk-button-default");
     }
     holder.appendChild(container);
+}
+
+function addTextAnswerToHolderMd(holder, text, id = -1){
+    let src = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+    holder.setAttribute("src", src);
+
 }
 
 function addImageToHolder(holder, src, isAnswer = false, id = -1){
@@ -123,8 +129,14 @@ function select(id) {
             case "image":
                 addImageToHolder(answersHolder, question["answers"][i]["src"], false, i);
                 break;
+            case "text-md":
+                const mdHolder = document.getElementById("md-holder");
+                mdHolder.hidden = false;
+                addTextAnswerToHolderMd(mdHolder, question["answers"][i]["content"], i);
+                break;
             default:
-                alert("Error: unknown answer type");
+                alert("Error: unknown answer type - " + question["answers"][i]["type"]);
+
                 break;
         }
     }
@@ -151,4 +163,3 @@ function select(id) {
 
     answersHolder.appendChild(createIncorrectBtn(incorrectButtonFn));
 }
-

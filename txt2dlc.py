@@ -7,8 +7,7 @@ import json
 
 
 QUESTION_TYPES = {'#': 'question-with-answers', '@': 'self-assessment'}
-ANSWER_TYPES = {'+': 'correct_text', '-': 'incorrect_text', 'o': 'correct_image', 'x': 'incorrect_image'}
-_START_WITH_ANSWER = ('+', '-', 'x', 'o')
+_START_WITH_ANSWER = ('+', '-', 'x', 'o','!')
 
 _i = 0
 def aiota(reset=False):
@@ -116,6 +115,21 @@ def ParseSelfAssessment(lines, index, result):
         elif (lines[index].startswith('x') or lines[index].startswith('o')):
             answer['type'] = 'image'
             answer['src'] = LoadImage(lines[index][1:].strip())
+        elif (lines[index].startswith('!')):
+            answer['type'] = 'text-md'
+            res = ""
+            while index < len(lines) and lines[index].startswith('!'):
+                line = lines[index][1:].strip()
+                # md image replacing
+                if line.startswith('!['):
+                    alt = line[2:line.find(']')]
+                    src = line[line.find('(')+1:line.find(')')]
+                    if not src.startswith('http'):
+                        line = f"![{alt}]({LoadImage(src)})"
+                    
+                res += line + "\n"
+                index += 1
+            answer['content'] = res
         else:
             print("Warning: Unknown answer line:")
             print(">>", lines[index-1])

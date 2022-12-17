@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit.min.css" />
     <link rel="stylesheet" href="css/index.css?v=3">
+    <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@2/dist/zero-md.min.js"></script>
 </head>
 
 <body>
@@ -69,6 +70,16 @@
                 <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button"
                     onclick="checkAnswers()">Check</button>
                 <hr class="uk-divider-icon" id="qaSplit">
+
+                <zero-md id="md-holder" src=""> <!-- JS: MD -->
+                    <template>
+                        <link rel="stylesheet" href="css/md.css">
+                        <link
+                            rel="stylesheet"
+                            href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"
+                        />
+                    </template>
+                </zero-md>
 
                 <div id="answersHolder">
                     <!-- JS: Answers -->

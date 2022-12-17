@@ -71,6 +71,8 @@ function showCheckButton() {
 function cleanUpHolders() {
     document.getElementById("questionHolder").innerHTML = "";
     document.getElementById("answersHolder").innerHTML = "";
+    document.getElementById("md-holder").src = "";
+    document.getElementById("md-holder").hidden = true;
 }
 
 /**

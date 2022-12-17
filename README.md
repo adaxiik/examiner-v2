@@ -40,8 +40,8 @@ Just simply [open the app](https://adaxiik.github.io/examiner-v2/) and drag and 
 - `content` or `src`, depending on the type
 
 ### `answers` is an array of objects with the following structure:
-- `type` (text/image)
-- `content` or `src`, depending on the type
+- `type` (text/image/text-md)
+- `content` or `src`, depending on the type (`content` for text and text-md)
 - `correct` (true/false)
     
 ## For type `self-assessment`:
@@ -140,7 +140,18 @@ Input file has following structure:
 - wrong answer
 
 @ self-assessment question
-+ correct answer
++ correct answer (not recommended to mix with markdown)
+! # Markdown support
+! ## starts with !
+! - list elements
+! - are supported
+! - as well as **bold** and *italic*
+! - and code blocks, etc..
+! 
+! ![image from url](https://example.com/image.png)
+! ![image file](example/image.png)
+!
+! [link](https://example.com)
 ```
 
 ## Example
