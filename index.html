@@ -2,7 +2,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
 <html class="uk-background-secondary">
 
 <head>
@@ -19,16 +19,11 @@
 </head>
 
 <body>
-
-    <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
     <div id="title">
-        <div class="text">
-            <h1 class="uk-light uk-text-center  uk-heading-xlarge">Examiner</h1>
+        <div class="title-text">
+            <h1 class="uk-light uk-text-center uk-heading-xlarge">Examiner</h1>
             <h3 class="uk-light uk-text-center">Let the game begin</h3>
         </div>
-
 
         <div id="uploadButton" class="upload uk-light uk-background-secondary" uk-form-custom>
             <input type="file" accept=".dlc" id="file-input">
@@ -49,7 +44,6 @@
     </div>
 
     <div id="examiner" hidden>
-
         <div class="uk-grid-collapse" uk-grid>
             <div class="uk-width-3-4@l uk-width-4-5@xl">
                 <div class="section-title">
@@ -63,47 +57,50 @@
                     </span>
                 </div>
 
-
                 <div id="questionHolder">
                     <!-- JS: Question -->
                 </div>
-                <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button"
-                    onclick="checkAnswers()">Check</button>
+
+                <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button" onclick="checkAnswers()">Check</button>
                 <hr class="uk-divider-icon" id="qaSplit">
 
                 <zero-md id="md-holder" src=""> <!-- JS: MD -->
                     <template>
                         <link rel="stylesheet" href="css/md.css?v=5">
-                        <link
-                            rel="stylesheet"
-                            href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"
-                        />
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"/>
                     </template>
                 </zero-md>
 
                 <div id="answersHolder">
                     <!-- JS: Answers -->
                 </div>
-
-                <br />
             </div>
+
             <div class="uk-width-1-4@l uk-width-1-5@xl">
-                <span class="section-title darker">Time</span>
-                <span class="timer" id="timer">
-                    <!-- JS: Timer --> 00 : 00
-                </span>
+                <div class="sidebar">
+                    <span class="section-title darker">Time</span>
+                    <span class="timer" id="timer">
+                        <!-- JS: Timer --> 00 : 00
+                    </span>
 
-                <span class="section-title darker">Questions</span>
-                <div class="question-list" id="questionList">
-                    <!-- JS: Question List -->
+                    <span class="section-title darker">Questions</span>
+                    <div class="question-list" id="questionList">
+                        <!-- JS: Question List -->
+                    </div>
+                    <div class="legend">
+                        <span class="circle active"></span> Active
+                        <span class="circle correct"></span> Correct
+                        <span class="circle wrong"></span> Wrong
+                        <span class="circle correct wrong"></span> Corrected
+                    </div>
+                    <!--
+                    <span class="section-title darker">Statistics</span>
+                    <div class="stats" id="stats">
+                        <span>Correct: </span>
+                        <span>Wrong: </span>
+                    </div>
+                    -->
                 </div>
-                <div class="legend">
-                    <span class="circle active"></span> Active
-                    <span class="circle correct"></span> Correct
-                    <span class="circle wrong"></span> Wrong
-                    <span class="circle correct wrong"></span> Corrected
-                </div>
-
             </div>
         </div>
     </div>

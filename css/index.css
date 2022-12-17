@@ -37,40 +37,44 @@
     height: 100%;
     background: #236EBD;
     box-sizing: border-box;
-    /*border: 5px dashed white;*/
 }
+
 .upload.onDrag .dragInfo {
     display: block;
 }
-.upload .uploadOptions{
+
+.upload .uploadOptions {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.upload.onDrag .uploadOptions{
+
+.upload.onDrag .uploadOptions {
     display: none;
 }
+
 .upload .uploadOptions span {
     display: block;
     margin-top: 0.5rem;
     text-align: center;
 }
 
-.text {
+.title-text {
     position: fixed;
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-#confirmTitle{
+#confirmTitle {
     position: absolute;
     text-align: center;
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 .confirmation {
     position: absolute;
     text-align: center;
@@ -83,39 +87,29 @@
 
 img.question {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 1em;
-    margin-bottom: 1em;
+    margin: 1em auto;
+}
 
+p {
+    display: block;
+    color: white !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
 }
 
 p.question {
-    display: block;
-    margin-left: 1.2em;
-    margin-right: 1.2em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
+    margin: 1em 1.2em;
 }
 
 p.answer {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-
-    text-align: center;
+    margin: 1em 10px;
     padding: 0.3em;
+    
+    -moz-transition: .1s ease-in;
+    -o-transition: .1s ease-in;
+    -webkit-transition: .1s ease-in;
 }
-
 
 img.answer {
     display: block;
@@ -194,6 +188,11 @@ p.answer.notselected {
 p.answer:hover {
     cursor: pointer;
     color: rgb(30, 135, 240);
+    background: #7a7a7a0f;
+
+    -moz-transition: .1s ease-in;
+    -o-transition: .1s ease-in;
+    -webkit-transition: .1s ease-in;
 }
 
 p.answer.selected:hover {
@@ -216,36 +215,50 @@ p.answer.notselected:hover {
     color: rgb(253, 249, 0);
 }
 
-
-
-.self-assessment-button-correct{
-    background-color: #2d8d2d;
-    height: 50vh;
+.sidebar {
+    position: sticky;
+    top: 0;
 }
 
-.self-assessment-button-correct:focus, .self-assessment-button-correct:hover {
+#answersHolder {
+    position: sticky;
+    bottom: 0;
+    background: #222222;
+    padding: 15px 0 15px 0;
+}
+
+.self-assessment-button-correct {
+    background-color: #2d8d2d;
+    height: 5vw;
+    margin: 0 10px 0 20px;
+    width: calc(50% - 30px);
+}
+
+.self-assessment-button-correct:focus, 
+.self-assessment-button-correct:hover {
     background-color: #267926;
-    height: 50vh;
 }
  
-.self-assessment-button-wrong{
-    height: 50vh;
+.self-assessment-button-wrong {
+    height: 5vw;
+    margin: 0 20px 0 10px;
+    width: calc(50% - 30px);
 }
 
-#endScreen{
+#confirmButton:focus, 
+#confirmButton:hover {
+    background-color: #267926;
+}
+
+#endScreen {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-#confirmButton{
+#confirmButton {
     background-color: #2d8d2d;
-    
-}
-
-#confirmButton:focus, #confirmButton:hover {
-    background-color: #267926;
 }
 
 .section-title.darker {
@@ -261,7 +274,7 @@ p.answer.notselected:hover {
     padding: 0.4rem;
 }
 
-.exit-button{
+.exit-button {
     position: absolute;
     top: 0;
     left: 0;
@@ -279,6 +292,7 @@ p.answer.notselected:hover {
 .question-list {
     padding: 1rem;
 }
+
 .question-list div {
     display: inline-block;
     background: #363636;
@@ -292,6 +306,7 @@ p.answer.notselected:hover {
     overflow: hidden;
     margin: 0rem .2rem;
 }
+
 .question-list div::before {
     content: "";
     display: block;
@@ -302,25 +317,30 @@ p.answer.notselected:hover {
     transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.question-list .wrong::before, .legend .wrong {
+.question-list .wrong::before, 
+.legend .wrong {
     background: #f44336;
 }
 
-.question-list .active::before, .legend .active{
+.question-list .active::before, 
+.legend .active{
     background: #1e87f0;
 } 
 
-.question-list .correct::before, .legend .correct {
+.question-list .correct::before, 
+.legend .correct {
     background: #4caf50;
 }
 
-.question-list .correct.wrong::before, .legend .correct.wrong {
+.question-list .correct.wrong::before, 
+.legend .correct.wrong {
     background: #ffc107;
 }
 
 .legend {
     display: block;
     text-align: center;
+    padding-bottom: 1rem;
 }
 
 .legend .circle {

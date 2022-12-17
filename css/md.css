@@ -1,23 +1,54 @@
-
-.markdown-body:not(pre){
+.markdown-body:not(pre) {
     color: white;
-    font-size: 1.35em;
     margin-left: 2em;
-
 }
 
-.markdown-body a{
+.markdown-body {
+    color: white;
+    font-size: 1.30rem;
+}
+
+.markdown-body ul {
+    font-size: 1.30rem;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+    margin-bottom: 0;
+}
+
+.markdown-body h1 + ol,
+.markdown-body h2 + ol,
+.markdown-body h3 + ol,
+.markdown-body h1 + ul,
+.markdown-body h2 + ul,
+.markdown-body h3 + ul {
+    margin-top: 0;
+}
+
+.markdown-body h1 {
+    font-size: 1.5rem;
+}
+
+.markdown-body h2 {
+    font-size: 1.40rem;
+}
+
+.markdown-body h3 {
+    font-size: 1.35em;
+}
+
+.markdown-body a {
     color: #00bfff;
     text-decoration: none;
 }
 
-.markdown-body a:hover{
+.markdown-body a:hover {
     color: #00bfff;
     text-decoration: underline;
 }
 
-.markdown-body img{
-    max-width: 100%;
+.markdown-body img {
+    max-width: 50rem;
 }
-
-
