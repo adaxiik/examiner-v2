@@ -91,7 +91,7 @@ function loadFromURL(url) {
                     }
                 })
                 .catch((err) => {
-                    showEndscreen("Error", "Could not parse DLC file :(");
+                    showEndscreen("Error", "Could not parse DLC file :(<br>" + err);
                 });
         })
         .catch((err) => {

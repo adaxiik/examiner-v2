@@ -52,3 +52,9 @@
 .markdown-body img {
     max-width: 50rem;
 }
+
+@media only screen and (max-width: 600px) {
+    .markdown-body img {
+        max-width: 100%;
+    }
+}
