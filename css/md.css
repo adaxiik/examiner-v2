@@ -1,0 +1,23 @@
+
+.markdown-body:not(pre){
+    color: white;
+    font-size: 1.35em;
+    margin-left: 2em;
+
+}
+
+.markdown-body a{
+    color: #00bfff;
+    text-decoration: none;
+}
+
+.markdown-body a:hover{
+    color: #00bfff;
+    text-decoration: underline;
+}
+
+.markdown-body img{
+    max-width: 100%;
+}
+
+
