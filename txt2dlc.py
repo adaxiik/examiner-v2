@@ -42,6 +42,9 @@ def main():
             index = ParseQuestion(lines, index, result)
         elif line.startswith('@'):
             index = ParseSelfAssessment(lines, index, result)
+        elif line.startswith('//'):
+            index += 1
+            continue
         else:
             if(not line):
                 index += 1
@@ -119,7 +122,7 @@ def ParseSelfAssessment(lines, index, result):
             answer['type'] = 'text-md'
             res = ""
             while index < len(lines) and lines[index].startswith('!'):
-                line = lines[index][1:].strip()
+                line = lines[index][1:].rstrip()
                 # md image replacing
                 if line.startswith('!['):
                     alt = line[2:line.find(']')]
