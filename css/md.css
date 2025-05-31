@@ -53,6 +53,16 @@
     max-width: 50rem;
 }
 
+.markdown-body table {
+    border-collapse: collapse;
+}
+
+.markdown-body td,
+.markdown-body th {
+    border: 1px solid gray;
+    padding: 0.3em 0.5em;
+}
+
 @media only screen and (max-width: 600px) {
     .markdown-body img {
         max-width: 100%;
