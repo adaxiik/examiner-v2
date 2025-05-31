@@ -57,6 +57,10 @@
     border-collapse: collapse;
 }
 
+.markdown-body thead {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .markdown-body td,
 .markdown-body th {
     border: 1px solid gray;
