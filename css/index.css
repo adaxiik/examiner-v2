@@ -258,9 +258,106 @@ p.answer.notselected:hover {
 
 #endScreen {
     position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    background: #222222;
+    padding: 3rem 2rem 0;
+}
+
+.pause-toggle-btn {
+    position: absolute;
+    right: 0.3rem;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #959595;
+    font-size: 1rem;
+    padding: 0.1rem 0.3rem;
+    line-height: 1;
+}
+
+.pause-toggle-btn:hover {
+    color: white;
+}
+
+.timer.paused {
+    color: #959595;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    max-width: 860px;
+    margin: 1.5rem auto;
+}
+
+.stats-card {
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+}
+
+.stats-card-value {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stats-card-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #959595;
+    margin-top: 0.3rem;
+}
+
+.stats-card.correct .stats-card-value { color: #4caf50; }
+.stats-card.wrong   .stats-card-value { color: #f44336; }
+.stats-card.corrected .stats-card-value { color: #ffc107; }
+.stats-card.skipped   .stats-card-value { color: #9c27b0; }
+
+.stats-section-title {
+    color: #959595;
+    text-align: center;
+    font-size: 1rem;
+    margin: 2rem 0 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.stats-table {
+    max-width: 860px;
+    margin: 0 auto;
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.stats-table th {
+    text-align: left;
+    color: #959595;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #333;
+    font-weight: normal;
+}
+
+.stats-table td {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.stats-table td:last-child {
+    text-align: center;
+    color: #f44336;
+    font-weight: bold;
 }
 
 #confirmButton {

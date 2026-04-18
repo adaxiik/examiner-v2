@@ -124,10 +124,12 @@ function setupTooltip(element, text) {
     });
     element.addEventListener('mousemove', function (e) {
         let t = _getTooltip();
-        let x = e.clientX + 15;
-        let y = e.clientY + 10;
-        if (x + 300 > window.innerWidth) x = e.clientX - 310;
-        if (y + 60 > window.innerHeight) y = e.clientY - 50;
+        let tw = t.offsetWidth || 300;
+        let th = t.offsetHeight || 40;
+        let x = e.clientX + 14;
+        let y = e.clientY + 12;
+        if (x + tw > window.innerWidth) x = e.clientX - tw - 10;
+        if (y + th > window.innerHeight) y = e.clientY - th - 8;
         t.style.left = x + 'px';
         t.style.top = y + 'px';
     });
@@ -160,6 +162,70 @@ function searchQuestions(value) {
             item.style.display = (title.includes(query) || number === query) ? '' : 'none';
         }
     }
+}
+
+function showStats(statsData, questions) {
+    let holder = document.getElementById('statsHolder');
+    if (!holder || !statsData) return;
+
+    function fmtTime(ms) {
+        if (!ms || ms < 0) return '0:00';
+        let s = Math.floor(ms / 1000);
+        let m = Math.floor(s / 60);
+        return m + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    let times = statsData.answerTimes;
+    let avgMs = times.length ? times.reduce((a, b) => a + b, 0) / times.length : 0;
+    let maxMs = times.length ? Math.max(...times) : 0;
+
+    let html = `<div class="stats-grid">
+        <div class="stats-card correct">
+            <span class="stats-card-value">${statsData.correctAttempts}</span>
+            <span class="stats-card-label">Správně zodpovězeno</span>
+        </div>
+        <div class="stats-card wrong">
+            <span class="stats-card-value">${statsData.wrongAttempts}</span>
+            <span class="stats-card-label">Špatných pokusů</span>
+        </div>
+        <div class="stats-card corrected">
+            <span class="stats-card-value">${statsData.correctedCount}</span>
+            <span class="stats-card-label">Opraveno</span>
+        </div>
+        <div class="stats-card skipped">
+            <span class="stats-card-value">${statsData.skippedCount}</span>
+            <span class="stats-card-label">Přeskočeno</span>
+        </div>
+        <div class="stats-card">
+            <span class="stats-card-value">${fmtTime(avgMs)}</span>
+            <span class="stats-card-label">Průměrný čas odpovědi</span>
+        </div>
+        <div class="stats-card">
+            <span class="stats-card-value">${fmtTime(maxMs)}</span>
+            <span class="stats-card-label">Nejdelší čas odpovědi</span>
+        </div>
+    </div>`;
+
+    let wrongEntries = Object.entries(statsData.questionWrongCounts)
+        .filter(([, c]) => c > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+    if (wrongEntries.length > 0) {
+        html += `<p class="stats-section-title">Chybně zodpovězené otázky</p>
+        <table class="stats-table">
+            <thead><tr><th>Otázka</th><th style="text-align:center;">Špatných pokusů</th></tr></thead>
+            <tbody>`;
+        for (let [id, count] of wrongEntries) {
+            let q = questions.find(q => String(q.id) === String(id));
+            let text = (q && q.question && q.question.type === 'text')
+                ? (q.question.content.length > 90 ? q.question.content.substring(0, 90) + '…' : q.question.content)
+                : `Otázka ID ${id}`;
+            html += `<tr><td>${text}</td><td>${count}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+    }
+
+    holder.innerHTML = html;
 }
 
 function createCorrectBtn(fn) {

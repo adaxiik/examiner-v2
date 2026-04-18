@@ -143,6 +143,10 @@ function select(id) {
 
 
     const correctButtonFn = function () {
+        let questionTime = examiner.totalElapsed - questionStartElapsed;
+        stats.correctAttempts++;
+        stats.answerTimes.push(questionTime);
+        if ((stats.questionWrongCounts[question.id] || 0) > 0) stats.correctedCount++;
         examiner.RemoveCurrentQuestion();
         let listItem = document.getElementById('question-list-item-' + question.id);
         listItem.classList.remove("skipped");
@@ -150,6 +154,7 @@ function select(id) {
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
+            showStats(stats, examiner.questions);
             return;
         }
         console.log("Correct");
@@ -158,6 +163,8 @@ function select(id) {
     answersHolder.appendChild(createCorrectBtn(correctButtonFn));
 
     const incorrectButtonFn = function () {
+        stats.wrongAttempts++;
+        stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
         let listItem = document.getElementById('question-list-item-' + question.id);
         listItem.classList.remove("skipped");
         listItem.classList.add("wrong");

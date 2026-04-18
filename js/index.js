@@ -56,6 +56,15 @@ function loadQuestions(contents) {
 let examiner;
 let question;
 let reviewMode = false;
+let questionStartElapsed = 0;
+let stats = {
+    correctAttempts: 0,
+    wrongAttempts: 0,
+    correctedCount: 0,
+    skippedCount: 0,
+    answerTimes: [],
+    questionWrongCounts: {},
+};
 
 /**
  * @brief creates the examiner and starts the exam
@@ -81,10 +90,24 @@ function playGame(dlc) {
  * @brief Shows the next question
  * 
  */
+function togglePause() {
+    if (!examiner) return;
+    if (examiner.paused) {
+        examiner.resume();
+        document.getElementById('pauseButton').innerText = '⏸';
+        document.getElementById('timer').classList.remove('paused');
+    } else {
+        examiner.pause();
+        document.getElementById('pauseButton').innerText = '▶';
+        document.getElementById('timer').classList.add('paused');
+    }
+}
+
 function nextQuestion() {
     showCheckButton();
 
     question = examiner.GetQuestion();
+    questionStartElapsed = examiner.totalElapsed;
 
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
@@ -121,6 +144,7 @@ function nextQuestion() {
  */
 function skipQuestion() {
     document.getElementById('question-list-item-' + question.id).classList.add("skipped");
+    stats.skippedCount++;
     nextQuestion();
 }
 
@@ -151,6 +175,8 @@ function goToQuestion(questionId) {
         let checkBtn = document.getElementById("checkButton");
         checkBtn.innerHTML = "Continue";
         checkBtn.onclick = exitReviewMode;
+    } else {
+        questionStartElapsed = examiner.totalElapsed;
     }
 }
 
@@ -192,9 +218,15 @@ function checkAnswers() {
     }
 
     let listItem = document.getElementById('question-list-item-' + question.id);
+    let wasSkipped = listItem.classList.contains("skipped");
     listItem.classList.remove("skipped");
 
+    let questionTime = examiner.totalElapsed - questionStartElapsed;
+
     if (allcorrect) {
+        stats.correctAttempts++;
+        stats.answerTimes.push(questionTime);
+        if ((stats.questionWrongCounts[question.id] || 0) > 0) stats.correctedCount++;
         examiner.RemoveCurrentQuestion();
         listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
@@ -202,12 +234,15 @@ function checkAnswers() {
             document.getElementById("checkButton").innerHTML = "LET'S GOO";
             document.getElementById("checkButton").onclick = function () {
                 showEndscreen("Congratulations!", "You have answered all questions correctly!");
-            }
+                showStats(stats, examiner.questions);
+            };
             return;
         }
         console.log("All correct");
     }
     else {
+        stats.wrongAttempts++;
+        stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
         listItem.classList.add("wrong");
         console.log("Not all correct");
     }
@@ -250,8 +285,9 @@ document.getElementById('uploadButton').addEventListener('dragleave', () => {
 
 // Timer
 setInterval(() => {
-    if (examiner != null && examiner.startTime != undefined) {
-        let seconds = Math.ceil((Date.now() - examiner.startTime) / 1000);
+    if (examiner != null) {
+        let ms = examiner.totalElapsed;
+        let seconds = Math.ceil(ms / 1000);
         let minutes = Math.floor(seconds / 60);
         let hours = Math.floor(minutes / 60);
         document.getElementById('timer').innerText = (hours > 0 ? String(hours).padStart(2, '0') + ' : ' : '') + String(minutes % 60).padStart(2, '0') + " : " + String(seconds % 60).padStart(2, '0');

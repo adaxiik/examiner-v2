@@ -81,7 +81,9 @@
 
             <div class="uk-width-1-4@l uk-width-1-5@xl">
                 <div class="sidebar">
-                    <span class="section-title darker">Time</span>
+                    <span class="section-title darker">Time
+                        <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pozastavit/Obnovit">⏸</button>
+                    </span>
                     <span class="timer" id="timer">
                         <!-- JS: Timer --> 00 : 00
                     </span>
@@ -121,8 +123,11 @@
         <h2 id="subtitleText" class="uk-text-center uk-light">
             <!-- JS: subtitle -->
         </h2>
-        <button id="restartButton" class="uk-button uk-button-danger uk-width uk-button-large" type="button"
-            onClick="window.location.reload();">Restart</button>
+        <div id="statsHolder"></div>
+        <div style="text-align:center; margin-top:2rem; padding-bottom:2rem;">
+            <button id="restartButton" class="uk-button uk-button-danger uk-button-large" type="button"
+                onClick="window.location.reload();">Restart</button>
+        </div>
     </div>
 
     <div id="confirmScreen" hidden>

@@ -90,7 +90,9 @@ class Examiner {
         this.end = false;
         this.questionPool = new QuestionPool(poolsize);
 
-        this.startTime = new Date();
+        this.elapsedTime = 0;
+        this.lastResumeTime = Date.now();
+        this.paused = false;
         let qListElement = document.getElementById('questionList');
         questions.forEach((question, key) => {
             let qElement = document.createElement('div');
@@ -145,6 +147,25 @@ class Examiner {
 
     RemoveCurrentQuestion() {
         this.questionPool.RemoveCurrentQuestion();
+    }
+
+    pause() {
+        if (!this.paused) {
+            this.elapsedTime += Date.now() - this.lastResumeTime;
+            this.paused = true;
+        }
+    }
+
+    resume() {
+        if (this.paused) {
+            this.lastResumeTime = Date.now();
+            this.paused = false;
+        }
+    }
+
+    get totalElapsed() {
+        if (this.paused) return this.elapsedTime;
+        return this.elapsedTime + (Date.now() - this.lastResumeTime);
     }
 
     get IsEnd() {
