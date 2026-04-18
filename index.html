@@ -41,6 +41,11 @@
             </div>
             <div class="dragInfo line"></div>
         </div>
+
+        <div id="recentFilesPanel" hidden>
+            <div class="recent-files-header">Nedávno otevřené</div>
+            <div id="recentFilesList"></div>
+        </div>
     </div>
 
     <div id="examiner" hidden>
@@ -61,7 +66,10 @@
                     <!-- JS: Question -->
                 </div>
 
-                <button id="checkButton" class="uk-button uk-button-primary uk-width-1-1" type="button" onclick="checkAnswers()">Check</button>
+                <div class="check-skip-row">
+                    <button id="checkButton" class="uk-button uk-button-primary" type="button" onclick="checkAnswers()">Check</button>
+                    <button id="skipButton" class="uk-button uk-button-default" type="button" onclick="skipQuestion()">Skip</button>
+                </div>
                 <hr class="uk-divider-icon" id="qaSplit">
 
                 <zero-md id="md-holder" src=""> <!-- JS: MD -->
@@ -78,12 +86,19 @@
 
             <div class="uk-width-1-4@l uk-width-1-5@xl">
                 <div class="sidebar">
-                    <span class="section-title darker">Time</span>
+                    <span class="section-title darker">Time
+                        <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pozastavit/Obnovit">⏸</button>
+                    </span>
                     <span class="timer" id="timer">
                         <!-- JS: Timer --> 00 : 00
                     </span>
 
-                    <span class="section-title darker">Questions</span>
+                    <span class="section-title darker">Questions
+                        <button class="search-toggle-btn" onclick="toggleSearch()" title="Hledat otázky"><span uk-icon="search"></span></button>
+                    </span>
+                    <div class="question-search-bar" id="questionSearchBar" hidden>
+                        <input type="text" id="questionSearch" class="question-search-input" placeholder="Hledat..." oninput="searchQuestions(this.value)">
+                    </div>
                     <div class="question-list" id="questionList">
                         <!-- JS: Question List -->
                     </div>
@@ -92,7 +107,9 @@
                         <span class="circle correct"></span> Correct
                         <span class="circle wrong"></span> Wrong
                         <span class="circle correct wrong"></span> Corrected
+                        <span class="circle skipped"></span> Skipped
                     </div>
+                    <button class="finish-exam-btn uk-button" onclick="confirmFinish()">Ukončit zkoušení</button>
                     <!--
                     <span class="section-title darker">Statistics</span>
                     <div class="stats" id="stats">
@@ -112,8 +129,11 @@
         <h2 id="subtitleText" class="uk-text-center uk-light">
             <!-- JS: subtitle -->
         </h2>
-        <button id="restartButton" class="uk-button uk-button-danger uk-width uk-button-large" type="button"
-            onClick="window.location.reload();">Restart</button>
+        <div id="statsHolder"></div>
+        <div style="text-align:center; margin-top:2rem; padding-bottom:2rem;">
+            <button id="restartButton" class="uk-button uk-button-danger uk-button-large" type="button"
+                onClick="window.location.reload();">Restart</button>
+        </div>
     </div>
 
     <div id="confirmScreen" hidden>

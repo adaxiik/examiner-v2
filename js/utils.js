@@ -59,10 +59,16 @@ function showExaminer(dlcname) {
 
 function hideCheckButton() {
     document.getElementById("checkButton").hidden = true;
+    document.getElementById("skipButton").hidden = true;
 }
 
 function showCheckButton() {
     document.getElementById("checkButton").hidden = false;
+    document.getElementById("skipButton").hidden = false;
+}
+
+function hideSkipButton() {
+    document.getElementById("skipButton").hidden = true;
 }
 
 /**
@@ -99,6 +105,128 @@ function loadFromURL(url) {
         });
 }
 
+
+let _tooltip = null;
+function _getTooltip() {
+    if (!_tooltip) {
+        _tooltip = document.createElement('div');
+        _tooltip.style.cssText = 'position:fixed;background:#1a1a1a;color:white;padding:5px 10px;border-radius:4px;font-size:0.85rem;max-width:300px;z-index:9999;pointer-events:none;display:none;word-wrap:break-word;border:1px solid #444;line-height:1.4;';
+        document.body.appendChild(_tooltip);
+    }
+    return _tooltip;
+}
+
+function setupTooltip(element, text) {
+    element.addEventListener('mouseenter', function () {
+        let t = _getTooltip();
+        t.innerText = text;
+        t.style.display = 'block';
+    });
+    element.addEventListener('mousemove', function (e) {
+        let t = _getTooltip();
+        let tw = t.offsetWidth || 300;
+        let th = t.offsetHeight || 40;
+        let x = e.clientX + 14;
+        let y = e.clientY + 12;
+        if (x + tw > window.innerWidth) x = e.clientX - tw - 10;
+        if (y + th > window.innerHeight) y = e.clientY - th - 8;
+        t.style.left = x + 'px';
+        t.style.top = y + 'px';
+    });
+    element.addEventListener('mouseleave', function () {
+        _getTooltip().style.display = 'none';
+    });
+    element.dataset.tooltipText = text;
+}
+
+function toggleSearch() {
+    let bar = document.getElementById('questionSearchBar');
+    bar.hidden = !bar.hidden;
+    if (!bar.hidden) {
+        document.getElementById('questionSearch').focus();
+    } else {
+        document.getElementById('questionSearch').value = '';
+        searchQuestions('');
+    }
+}
+
+function searchQuestions(value) {
+    let items = document.getElementById('questionList').children;
+    let query = value.trim().toLowerCase();
+    for (let item of items) {
+        if (!query) {
+            item.style.display = '';
+        } else {
+            let title = (item.dataset.tooltipText || '').toLowerCase();
+            let number = item.innerText.trim();
+            item.style.display = (title.includes(query) || number === query) ? '' : 'none';
+        }
+    }
+}
+
+function showStats(statsData, questions) {
+    let holder = document.getElementById('statsHolder');
+    if (!holder || !statsData) return;
+
+    function fmtTime(ms) {
+        if (!ms || ms < 0) return '0:00';
+        let s = Math.floor(ms / 1000);
+        let m = Math.floor(s / 60);
+        return m + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    let times = statsData.answerTimes;
+    let avgMs = times.length ? times.reduce((a, b) => a + b, 0) / times.length : 0;
+    let maxMs = times.length ? Math.max(...times) : 0;
+
+    let html = `<div class="stats-grid">
+        <div class="stats-card correct">
+            <span class="stats-card-value">${statsData.correctAttempts}</span>
+            <span class="stats-card-label">Správně zodpovězeno</span>
+        </div>
+        <div class="stats-card wrong">
+            <span class="stats-card-value">${statsData.wrongAttempts}</span>
+            <span class="stats-card-label">Špatných pokusů</span>
+        </div>
+        <div class="stats-card corrected">
+            <span class="stats-card-value">${statsData.correctedCount}</span>
+            <span class="stats-card-label">Opraveno</span>
+        </div>
+        <div class="stats-card skipped">
+            <span class="stats-card-value">${statsData.skippedCount}</span>
+            <span class="stats-card-label">Přeskočeno</span>
+        </div>
+        <div class="stats-card">
+            <span class="stats-card-value">${fmtTime(avgMs)}</span>
+            <span class="stats-card-label">Průměrný čas odpovědi</span>
+        </div>
+        <div class="stats-card">
+            <span class="stats-card-value">${fmtTime(maxMs)}</span>
+            <span class="stats-card-label">Nejdelší čas odpovědi</span>
+        </div>
+    </div>`;
+
+    let wrongEntries = Object.entries(statsData.questionWrongCounts)
+        .filter(([, c]) => c > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+    if (wrongEntries.length > 0) {
+        html += `<p class="stats-section-title">Chybně zodpovězené otázky</p>
+        <table class="stats-table">
+            <thead><tr><th>Otázka</th><th style="text-align:center;">Špatných pokusů</th></tr></thead>
+            <tbody>`;
+        for (let [id, count] of wrongEntries) {
+            let q = questions.find(q => String(q.id) === String(id));
+            let text = (q && q.question && q.question.type === 'text')
+                ? (q.question.content.length > 90 ? q.question.content.substring(0, 90) + '…' : q.question.content)
+                : `Otázka ID ${id}`;
+            html += `<tr><td>${text}</td><td>${count}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+    }
+
+    holder.innerHTML = html;
+}
 
 function createCorrectBtn(fn) {
     let correctButton = document.createElement("button");

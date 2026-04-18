@@ -101,6 +101,7 @@ function addImageToHolder(holder, src, isAnswer = false, id = -1){
 
 
 function select(id) {
+    if (examiner && examiner.paused) return;
     console.log("Selected " + id);
     if (question["answers"][id]["selected"]) {
         question["answers"][id]["selected"] = false;
@@ -143,11 +144,18 @@ function select(id) {
 
 
     const correctButtonFn = function () {
+        let questionTime = examiner.totalElapsed - questionStartElapsed;
+        stats.correctAttempts++;
+        stats.answerTimes.push(questionTime);
+        if ((stats.questionWrongCounts[question.id] || 0) > 0) stats.correctedCount++;
         examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-' + question.id).classList.add("correct");
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        listItem.classList.remove("skipped");
+        listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
+            showStats(stats, examiner.questions);
             return;
         }
         console.log("Correct");
@@ -156,7 +164,11 @@ function select(id) {
     answersHolder.appendChild(createCorrectBtn(correctButtonFn));
 
     const incorrectButtonFn = function () {
-        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
+        stats.wrongAttempts++;
+        stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        listItem.classList.remove("skipped");
+        listItem.classList.add("wrong");
         console.log("incorrect");
         nextQuestion();
     };

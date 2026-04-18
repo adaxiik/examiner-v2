@@ -19,7 +19,7 @@ function readSingleFile(e) {
     reader.onload = function (e) {
         var contents = e.target.result;
         console.log("Loading file " + file.name);
-        loadQuestions(contents);
+        loadQuestions(contents, file.name);
     };
     reader.readAsText(file);
 }
@@ -32,7 +32,7 @@ function readSingleFile(e) {
  * @param {*} contents  .dlc file contents
  * @returns 
  */
-function loadQuestions(contents) {
+function loadQuestions(contents, fileName) {
     var questions;
     try {
         questions = JSON.parse(contents);
@@ -45,16 +45,28 @@ function loadQuestions(contents) {
     if (!VerifyDlc(questions))
         return;
 
+    saveToRecent(fileName || questions["name"], contents);
+
     console.log("Loaded " + questions["name"] + " dlc");
 
     var uploadButton = document.getElementById("uploadButton");
-    uploadButton.parentNode.removeChild(uploadButton);
+    if (uploadButton) uploadButton.parentNode.removeChild(uploadButton);
 
     playGame(questions);
 }
 
 let examiner;
 let question;
+let reviewMode = false;
+let questionStartElapsed = 0;
+let stats = {
+    correctAttempts: 0,
+    wrongAttempts: 0,
+    correctedCount: 0,
+    skippedCount: 0,
+    answerTimes: [],
+    questionWrongCounts: {},
+};
 
 /**
  * @brief creates the examiner and starts the exam
@@ -80,10 +92,40 @@ function playGame(dlc) {
  * @brief Shows the next question
  * 
  */
+function syncPauseState() {
+    if (!examiner) return;
+    let paused = examiner.paused;
+    document.getElementById('checkButton').disabled = paused;
+    document.getElementById('skipButton').disabled = paused;
+}
+
+function togglePause() {
+    if (!examiner) return;
+    if (examiner.paused) {
+        examiner.resume();
+        document.getElementById('pauseButton').innerText = '⏸';
+        document.getElementById('timer').classList.remove('paused');
+    } else {
+        examiner.pause();
+        document.getElementById('pauseButton').innerText = '▶';
+        document.getElementById('timer').classList.add('paused');
+    }
+    syncPauseState();
+}
+
+function confirmFinish() {
+    showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
+        showEndscreen("Ukončeno", "Zkoušení bylo předčasně ukončeno.");
+        showStats(stats, examiner.questions);
+    });
+}
+
 function nextQuestion() {
     showCheckButton();
+    syncPauseState();
 
     question = examiner.GetQuestion();
+    questionStartElapsed = examiner.totalElapsed;
 
     console.log(question);
     console.log("Loaded Question ID: " + question["id"]);
@@ -116,10 +158,59 @@ function nextQuestion() {
 
 
 /**
+ * @brief Skips the current question and marks it with a purple flag
+ */
+function skipQuestion() {
+    document.getElementById('question-list-item-' + question.id).classList.add("skipped");
+    stats.skippedCount++;
+    examiner.SkipCurrentQuestion();
+    nextQuestion();
+}
+
+/**
+ * @brief Navigates to a specific question by ID (pool or already answered)
+ */
+function goToQuestion(questionId) {
+    let q = examiner.GoToQuestion(questionId);
+    reviewMode = !q;
+
+    if (reviewMode) {
+        q = examiner.GetQuestionDataById(questionId);
+        if (!q) return;
+    }
+
+    question = q;
+
+    showCheckButton();
+    syncPauseState();
+
+    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
+    document.getElementById("question-list-item-" + question["id"]).classList.add("active");
+
+    cleanUpHolders();
+    interpretQuestion(question);
+
+    if (reviewMode) {
+        hideSkipButton();
+        let checkBtn = document.getElementById("checkButton");
+        checkBtn.innerHTML = "Continue";
+        checkBtn.onclick = exitReviewMode;
+    } else {
+        questionStartElapsed = examiner.totalElapsed;
+    }
+}
+
+function exitReviewMode() {
+    reviewMode = false;
+    nextQuestion();
+}
+
+/**
  * @brief Checks the answers and shows the correct answer
- * 
+ *
  */
 function checkAnswers() {
+    hideSkipButton();
     let allcorrect = true;
     for (let i = 0; i < question.answers.length; i++) {
         let answer = question.answers[i];
@@ -146,22 +237,32 @@ function checkAnswers() {
         }
     }
 
+    let listItem = document.getElementById('question-list-item-' + question.id);
+    listItem.classList.remove("skipped");
+
+    let questionTime = examiner.totalElapsed - questionStartElapsed;
+
     if (allcorrect) {
+        stats.correctAttempts++;
+        stats.answerTimes.push(questionTime);
+        if ((stats.questionWrongCounts[question.id] || 0) > 0) stats.correctedCount++;
         examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-' + question.id).classList.add("correct");
+        listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
-            //alert("Congratulations! You have answered all questions correctly!");
             document.getElementById("checkButton").innerHTML = "LET'S GOO";
             document.getElementById("checkButton").onclick = function () {
                 showEndscreen("Congratulations!", "You have answered all questions correctly!");
-            }
+                showStats(stats, examiner.questions);
+            };
             return;
         }
         console.log("All correct");
     }
     else {
-        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
+        stats.wrongAttempts++;
+        stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
+        listItem.classList.add("wrong");
         console.log("Not all correct");
     }
 
@@ -180,10 +281,12 @@ document.getElementById('file-input')
 
 // Drag and drop area
 document.addEventListener('dragenter', () => {
-    document.getElementById('uploadButton').classList.add('onDrag');
-})
-document.getElementById('uploadButton').addEventListener('dragleave', () => {
-    document.getElementById('uploadButton').classList.remove('onDrag');
+    let btn = document.getElementById('uploadButton');
+    if (btn) btn.classList.add('onDrag');
+});
+let _uploadBtn = document.getElementById('uploadButton');
+if (_uploadBtn) _uploadBtn.addEventListener('dragleave', () => {
+    _uploadBtn.classList.remove('onDrag');
 });
 
 // Load file from url
@@ -201,10 +304,96 @@ document.getElementById('uploadButton').addEventListener('dragleave', () => {
     //     loadFromURL(fileUrl);
 })();
 
+// Recent files
+const RECENT_FILES_KEY = 'examiner_recent_files';
+const RECENT_FILES_MAX = 8;
+
+function getRecentFiles() {
+    try {
+        return JSON.parse(localStorage.getItem(RECENT_FILES_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveToRecent(name, content) {
+    try {
+        let recent = getRecentFiles();
+        recent = recent.filter(f => f.name !== name);
+        recent.unshift({ name, content, timestamp: Date.now() });
+        recent = recent.slice(0, RECENT_FILES_MAX);
+        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recent));
+    } catch (e) {
+        console.warn('Could not save to recent files:', e);
+    }
+}
+
+function deleteFromRecent(index) {
+    let recent = getRecentFiles();
+    recent.splice(index, 1);
+    try {
+        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recent));
+    } catch (e) {}
+    renderRecentFiles();
+}
+
+function loadFromRecent(index) {
+    let recent = getRecentFiles();
+    if (!recent[index]) return;
+    loadQuestions(recent[index].content, recent[index].name);
+}
+
+function renderRecentFiles() {
+    let panel = document.getElementById('recentFilesPanel');
+    if (!panel) return;
+    let recent = getRecentFiles();
+    if (recent.length === 0) {
+        panel.hidden = true;
+        return;
+    }
+    panel.hidden = false;
+    let list = document.getElementById('recentFilesList');
+    list.innerHTML = '';
+    recent.forEach(function (file, index) {
+        let date = new Date(file.timestamp).toLocaleString('cs-CZ', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+        let item = document.createElement('div');
+        item.className = 'recent-file-item';
+        item.onclick = function () { loadFromRecent(index); };
+
+        let nameSpan = document.createElement('span');
+        nameSpan.className = 'recent-file-name';
+        nameSpan.textContent = file.name;
+
+        let dateSpan = document.createElement('span');
+        dateSpan.className = 'recent-file-date';
+        dateSpan.textContent = date;
+
+        let delBtn = document.createElement('button');
+        delBtn.className = 'recent-file-delete';
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Odstranit ze seznamu';
+        delBtn.onclick = function (e) {
+            e.stopPropagation();
+            deleteFromRecent(index);
+        };
+
+        item.appendChild(nameSpan);
+        item.appendChild(dateSpan);
+        item.appendChild(delBtn);
+        list.appendChild(item);
+    });
+}
+
+renderRecentFiles();
+
 // Timer
 setInterval(() => {
-    if (examiner != null && examiner.startTime != undefined) {
-        let seconds = Math.ceil((Date.now() - examiner.startTime) / 1000);
+    if (examiner != null) {
+        let ms = examiner.totalElapsed;
+        let seconds = Math.ceil(ms / 1000);
         let minutes = Math.floor(seconds / 60);
         let hours = Math.floor(minutes / 60);
         document.getElementById('timer').innerText = (hours > 0 ? String(hours).padStart(2, '0') + ' : ' : '') + String(minutes % 60).padStart(2, '0') + " : " + String(seconds % 60).padStart(2, '0');
