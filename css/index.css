@@ -278,6 +278,63 @@ p.answer.notselected:hover {
     color: #959595;
     font-size: 1.1rem;
     padding: 0.4rem;
+    position: relative;
+}
+
+.search-toggle-btn {
+    position: absolute;
+    right: 0.3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #959595;
+    padding: 0.1rem 0.3rem;
+    line-height: 0;
+}
+
+.search-toggle-btn:hover {
+    color: white;
+}
+
+.question-search-bar {
+    background: #0e0e0e;
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.question-search-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #555;
+    color: white;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.1rem 0;
+}
+
+.question-search-input::placeholder {
+    color: #555;
+}
+
+.check-skip-row {
+    display: flex;
+    gap: 4px;
+}
+
+.check-skip-row #checkButton {
+    flex: 1;
+    width: auto;
+}
+
+#skipButton {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    padding: 0 14px;
+    letter-spacing: 0.05em;
 }
 
 .exit-button {

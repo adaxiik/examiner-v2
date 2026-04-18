@@ -173,12 +173,14 @@ function checkAnswers() {
         }
     }
 
+    let listItem = document.getElementById('question-list-item-' + question.id);
+    listItem.classList.remove("skipped");
+
     if (allcorrect) {
         examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-' + question.id).classList.add("correct");
+        listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
-            //alert("Congratulations! You have answered all questions correctly!");
             document.getElementById("checkButton").innerHTML = "LET'S GOO";
             document.getElementById("checkButton").onclick = function () {
                 showEndscreen("Congratulations!", "You have answered all questions correctly!");
@@ -188,7 +190,7 @@ function checkAnswers() {
         console.log("All correct");
     }
     else {
-        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
+        listItem.classList.add("wrong");
         console.log("Not all correct");
     }
 

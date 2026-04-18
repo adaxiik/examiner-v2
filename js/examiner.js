@@ -114,7 +114,29 @@ class Examiner {
     }
 
     GoToQuestion(id) {
-        return this.questionPool.GetQuestionById(id);
+        // Check active pool first
+        let poolResult = this.questionPool.GetQuestionById(id);
+        if (poolResult) return poolResult;
+
+        // Search in unplayed questions and pull into pool
+        for (let i = this.questionIndex; i < this.questions.length; i++) {
+            if (this.questions[i].id === id) {
+                let q = this.questions[i];
+                this.questions[i] = this.questions[this.questionIndex];
+                this.questions[this.questionIndex] = q;
+                this.questionIndex++;
+                this.questionPool.AddQuestion(q);
+                let newIdx = this.questionPool.questions.length - 1;
+                this.questionPool.currentQuestion = newIdx;
+                this.questionPool.previousQuestion = newIdx;
+                if (this.questionIndex >= this.questions.length) {
+                    this.end = true;
+                }
+                return q;
+            }
+        }
+
+        return null; // Already answered correctly
     }
 
     RemoveCurrentQuestion() {

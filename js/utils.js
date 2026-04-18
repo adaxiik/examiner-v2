@@ -106,6 +106,31 @@ function loadFromURL(url) {
 }
 
 
+function toggleSearch() {
+    let bar = document.getElementById('questionSearchBar');
+    bar.hidden = !bar.hidden;
+    if (!bar.hidden) {
+        document.getElementById('questionSearch').focus();
+    } else {
+        document.getElementById('questionSearch').value = '';
+        searchQuestions('');
+    }
+}
+
+function searchQuestions(value) {
+    let items = document.getElementById('questionList').children;
+    let query = value.trim().toLowerCase();
+    for (let item of items) {
+        if (!query) {
+            item.style.display = '';
+        } else {
+            let title = (item.title || '').toLowerCase();
+            let number = item.innerText.trim();
+            item.style.display = (title.includes(query) || number === query) ? '' : 'none';
+        }
+    }
+}
+
 function createCorrectBtn(fn) {
     let correctButton = document.createElement("button");
     correctButton.innerHTML = "<span uk-icon='icon: check; ratio: 5.5'></span>";

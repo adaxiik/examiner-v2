@@ -144,7 +144,9 @@ function select(id) {
 
     const correctButtonFn = function () {
         examiner.RemoveCurrentQuestion();
-        document.getElementById('question-list-item-' + question.id).classList.add("correct");
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        listItem.classList.remove("skipped");
+        listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
         if (examiner.IsEnd) {
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
@@ -156,7 +158,9 @@ function select(id) {
     answersHolder.appendChild(createCorrectBtn(correctButtonFn));
 
     const incorrectButtonFn = function () {
-        document.getElementById('question-list-item-' + question.id).classList.add("wrong");
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        listItem.classList.remove("skipped");
+        listItem.classList.add("wrong");
         console.log("incorrect");
         nextQuestion();
     };
