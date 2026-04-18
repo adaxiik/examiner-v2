@@ -19,7 +19,7 @@ function readSingleFile(e) {
     reader.onload = function (e) {
         var contents = e.target.result;
         console.log("Loading file " + file.name);
-        loadQuestions(contents);
+        loadQuestions(contents, file.name);
     };
     reader.readAsText(file);
 }
@@ -32,7 +32,7 @@ function readSingleFile(e) {
  * @param {*} contents  .dlc file contents
  * @returns 
  */
-function loadQuestions(contents) {
+function loadQuestions(contents, fileName) {
     var questions;
     try {
         questions = JSON.parse(contents);
@@ -45,10 +45,12 @@ function loadQuestions(contents) {
     if (!VerifyDlc(questions))
         return;
 
+    saveToRecent(fileName || questions["name"], contents);
+
     console.log("Loaded " + questions["name"] + " dlc");
 
     var uploadButton = document.getElementById("uploadButton");
-    uploadButton.parentNode.removeChild(uploadButton);
+    if (uploadButton) uploadButton.parentNode.removeChild(uploadButton);
 
     playGame(questions);
 }
@@ -279,10 +281,12 @@ document.getElementById('file-input')
 
 // Drag and drop area
 document.addEventListener('dragenter', () => {
-    document.getElementById('uploadButton').classList.add('onDrag');
-})
-document.getElementById('uploadButton').addEventListener('dragleave', () => {
-    document.getElementById('uploadButton').classList.remove('onDrag');
+    let btn = document.getElementById('uploadButton');
+    if (btn) btn.classList.add('onDrag');
+});
+let _uploadBtn = document.getElementById('uploadButton');
+if (_uploadBtn) _uploadBtn.addEventListener('dragleave', () => {
+    _uploadBtn.classList.remove('onDrag');
 });
 
 // Load file from url
@@ -299,6 +303,91 @@ document.getElementById('uploadButton').addEventListener('dragleave', () => {
     // if (confirm("You are about to load a DLC file from a url.\nAre you sure you trust the source?"))
     //     loadFromURL(fileUrl);
 })();
+
+// Recent files
+const RECENT_FILES_KEY = 'examiner_recent_files';
+const RECENT_FILES_MAX = 8;
+
+function getRecentFiles() {
+    try {
+        return JSON.parse(localStorage.getItem(RECENT_FILES_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveToRecent(name, content) {
+    try {
+        let recent = getRecentFiles();
+        recent = recent.filter(f => f.name !== name);
+        recent.unshift({ name, content, timestamp: Date.now() });
+        recent = recent.slice(0, RECENT_FILES_MAX);
+        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recent));
+    } catch (e) {
+        console.warn('Could not save to recent files:', e);
+    }
+}
+
+function deleteFromRecent(index) {
+    let recent = getRecentFiles();
+    recent.splice(index, 1);
+    try {
+        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recent));
+    } catch (e) {}
+    renderRecentFiles();
+}
+
+function loadFromRecent(index) {
+    let recent = getRecentFiles();
+    if (!recent[index]) return;
+    loadQuestions(recent[index].content, recent[index].name);
+}
+
+function renderRecentFiles() {
+    let panel = document.getElementById('recentFilesPanel');
+    if (!panel) return;
+    let recent = getRecentFiles();
+    if (recent.length === 0) {
+        panel.hidden = true;
+        return;
+    }
+    panel.hidden = false;
+    let list = document.getElementById('recentFilesList');
+    list.innerHTML = '';
+    recent.forEach(function (file, index) {
+        let date = new Date(file.timestamp).toLocaleString('cs-CZ', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+        let item = document.createElement('div');
+        item.className = 'recent-file-item';
+        item.onclick = function () { loadFromRecent(index); };
+
+        let nameSpan = document.createElement('span');
+        nameSpan.className = 'recent-file-name';
+        nameSpan.textContent = file.name;
+
+        let dateSpan = document.createElement('span');
+        dateSpan.className = 'recent-file-date';
+        dateSpan.textContent = date;
+
+        let delBtn = document.createElement('button');
+        delBtn.className = 'recent-file-delete';
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Odstranit ze seznamu';
+        delBtn.onclick = function (e) {
+            e.stopPropagation();
+            deleteFromRecent(index);
+        };
+
+        item.appendChild(nameSpan);
+        item.appendChild(dateSpan);
+        item.appendChild(delBtn);
+        list.appendChild(item);
+    });
+}
+
+renderRecentFiles();
 
 // Timer
 setInterval(() => {

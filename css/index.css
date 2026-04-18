@@ -67,6 +67,84 @@
     transform: translate(-50%, -50%);
 }
 
+#recentFilesPanel {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 520px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.recent-files-header {
+    background: #121212;
+    color: #959595;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.8rem;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.recent-file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-bottom: 1px solid #222;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.recent-file-item:last-child {
+    border-bottom: none;
+}
+
+.recent-file-item:hover {
+    background: #232323;
+}
+
+.recent-file-name {
+    flex: 1;
+    color: #ddd;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recent-file-item:hover .recent-file-name {
+    color: #1e87f0;
+}
+
+.recent-file-date {
+    color: #555;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.recent-file-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #444;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 0.15rem;
+    flex-shrink: 0;
+    transition: color 0.1s;
+}
+
+.recent-file-delete:hover {
+    color: #f44336;
+}
+
 #confirmTitle {
     position: absolute;
     text-align: center;
