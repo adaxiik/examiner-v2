@@ -93,6 +93,7 @@ class Examiner {
         this.elapsedTime = 0;
         this.lastResumeTime = Date.now();
         this.paused = false;
+        this.skippedQueue = [];
         let qListElement = document.getElementById('questionList');
         questions.forEach((question, key) => {
             let qElement = document.createElement('div');
@@ -109,10 +110,20 @@ class Examiner {
     }
 
     GetQuestion() {
-        if (!this.questionPool.IsFull) {
+        if (this.questionPool.IsEmpty && this.end && this.skippedQueue.length > 0) {
+            while (!this.questionPool.IsFull && this.skippedQueue.length > 0) {
+                this.questionPool.AddQuestion(this.skippedQueue.shift());
+            }
+        } else if (!this.questionPool.IsFull) {
             this.FillQuestionPool();
         }
         return this.questionPool.GetRandomQuestion();
+    }
+
+    SkipCurrentQuestion() {
+        let q = this.questionPool.questions[this.questionPool.currentQuestion];
+        this.questionPool.RemoveCurrentQuestion();
+        this.skippedQueue.push(q);
     }
 
     GetQuestionDataById(id) {
@@ -135,11 +146,20 @@ class Examiner {
                 let newIdx = this.questionPool.questions.length - 1;
                 this.questionPool.currentQuestion = newIdx;
                 this.questionPool.previousQuestion = newIdx;
-                if (this.questionIndex >= this.questions.length) {
-                    this.end = true;
-                }
+                if (this.questionIndex >= this.questions.length) this.end = true;
                 return q;
             }
+        }
+
+        // Search in skipped queue and pull into pool
+        let sqIdx = this.skippedQueue.findIndex(q => q.id === id);
+        if (sqIdx !== -1) {
+            let q = this.skippedQueue.splice(sqIdx, 1)[0];
+            this.questionPool.AddQuestion(q);
+            let newIdx = this.questionPool.questions.length - 1;
+            this.questionPool.currentQuestion = newIdx;
+            this.questionPool.previousQuestion = newIdx;
+            return q;
         }
 
         return null; // Already answered correctly
@@ -169,11 +189,11 @@ class Examiner {
     }
 
     get IsEnd() {
-        return this.end && this.questionPool.IsEmpty;
+        return this.end && this.questionPool.IsEmpty && this.skippedQueue.length === 0;
     }
 
     get GetQuestionCount() {
-        return this.questions.length - this.questionIndex + this.questionPool.questions.length;
+        return this.questions.length - this.questionIndex + this.questionPool.questions.length + this.skippedQueue.length;
     }
 
     FillQuestionPool() {

@@ -90,6 +90,13 @@ function playGame(dlc) {
  * @brief Shows the next question
  * 
  */
+function syncPauseState() {
+    if (!examiner) return;
+    let paused = examiner.paused;
+    document.getElementById('checkButton').disabled = paused;
+    document.getElementById('skipButton').disabled = paused;
+}
+
 function togglePause() {
     if (!examiner) return;
     if (examiner.paused) {
@@ -101,10 +108,19 @@ function togglePause() {
         document.getElementById('pauseButton').innerText = '▶';
         document.getElementById('timer').classList.add('paused');
     }
+    syncPauseState();
+}
+
+function confirmFinish() {
+    showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
+        showEndscreen("Ukončeno", "Zkoušení bylo předčasně ukončeno.");
+        showStats(stats, examiner.questions);
+    });
 }
 
 function nextQuestion() {
     showCheckButton();
+    syncPauseState();
 
     question = examiner.GetQuestion();
     questionStartElapsed = examiner.totalElapsed;
@@ -145,6 +161,7 @@ function nextQuestion() {
 function skipQuestion() {
     document.getElementById('question-list-item-' + question.id).classList.add("skipped");
     stats.skippedCount++;
+    examiner.SkipCurrentQuestion();
     nextQuestion();
 }
 
@@ -163,6 +180,7 @@ function goToQuestion(questionId) {
     question = q;
 
     showCheckButton();
+    syncPauseState();
 
     Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
@@ -218,7 +236,6 @@ function checkAnswers() {
     }
 
     let listItem = document.getElementById('question-list-item-' + question.id);
-    let wasSkipped = listItem.classList.contains("skipped");
     listItem.classList.remove("skipped");
 
     let questionTime = examiner.totalElapsed - questionStartElapsed;

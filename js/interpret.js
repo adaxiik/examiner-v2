@@ -101,6 +101,7 @@ function addImageToHolder(holder, src, isAnswer = false, id = -1){
 
 
 function select(id) {
+    if (examiner && examiner.paused) return;
     console.log("Selected " + id);
     if (question["answers"][id]["selected"]) {
         question["answers"][id]["selected"] = false;

@@ -518,3 +518,19 @@ p.answer.notselected:hover {
     border-radius: 50%;
     margin-left: 0.2rem;
 }
+
+.finish-exam-btn {
+    display: block;
+    width: calc(100% - 1.6rem);
+    margin: 0 0.8rem 0.8rem;
+    font-size: 0.8rem;
+    color: #666 !important;
+    border: 1px solid #444;
+    background: transparent;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.finish-exam-btn:hover {
+    color: #f44336 !important;
+    border-color: #f44336;
+}
