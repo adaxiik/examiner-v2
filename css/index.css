@@ -311,6 +311,7 @@ p.answer.notselected:hover {
     position: relative;
     overflow: hidden;
     margin: 0rem .2rem;
+    cursor: pointer;
 }
 
 .question-list div::before {
@@ -338,7 +339,12 @@ p.answer.notselected:hover {
     background: #4caf50;
 }
 
-.question-list .correct.wrong::before, 
+.question-list .skipped::before,
+.legend .skipped {
+    background: #9c27b0;
+}
+
+.question-list .correct.wrong::before,
 .legend .correct.wrong {
     background: #ffc107;
 }

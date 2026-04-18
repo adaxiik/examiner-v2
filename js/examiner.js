@@ -70,6 +70,14 @@ class QuestionPool {
         return this.questions[this.currentQuestion];
     }
 
+    GetQuestionById(id) {
+        let idx = this.questions.findIndex(q => q.id === id);
+        if (idx === -1) return null;
+        this.currentQuestion = idx;
+        this.previousQuestion = idx;
+        return this.questions[idx];
+    }
+
     RemoveCurrentQuestion() {
         this.questions.splice(this.currentQuestion, 1);
     }
@@ -88,6 +96,10 @@ class Examiner {
             let qElement = document.createElement('div');
             qElement.innerText = key + 1;
             qElement.id = 'question-list-item-' + question.id;
+            if (question.question && question.question.type === 'text') {
+                qElement.title = question.question.content;
+            }
+            qElement.onclick = function() { goToQuestion(question.id); };
             qListElement.appendChild(qElement);
         });
 
@@ -99,6 +111,10 @@ class Examiner {
             this.FillQuestionPool();
         }
         return this.questionPool.GetRandomQuestion();
+    }
+
+    GoToQuestion(id) {
+        return this.questionPool.GetQuestionById(id);
     }
 
     RemoveCurrentQuestion() {

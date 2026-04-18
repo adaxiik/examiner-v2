@@ -59,10 +59,16 @@ function showExaminer(dlcname) {
 
 function hideCheckButton() {
     document.getElementById("checkButton").hidden = true;
+    document.getElementById("skipButton").hidden = true;
 }
 
 function showCheckButton() {
     document.getElementById("checkButton").hidden = false;
+    document.getElementById("skipButton").hidden = false;
+}
+
+function hideSkipButton() {
+    document.getElementById("skipButton").hidden = true;
 }
 
 /**

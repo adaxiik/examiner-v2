@@ -116,10 +116,37 @@ function nextQuestion() {
 
 
 /**
+ * @brief Skips the current question and marks it with a purple flag
+ */
+function skipQuestion() {
+    document.getElementById('question-list-item-' + question.id).classList.add("skipped");
+    nextQuestion();
+}
+
+/**
+ * @brief Navigates to a specific question by ID (only if it's in the active pool)
+ */
+function goToQuestion(questionId) {
+    let q = examiner.GoToQuestion(questionId);
+    if (!q) return;
+
+    question = q;
+
+    showCheckButton();
+
+    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
+    document.getElementById("question-list-item-" + question["id"]).classList.add("active");
+
+    cleanUpHolders();
+    interpretQuestion(question);
+}
+
+/**
  * @brief Checks the answers and shows the correct answer
- * 
+ *
  */
 function checkAnswers() {
+    hideSkipButton();
     let allcorrect = true;
     for (let i = 0; i < question.answers.length; i++) {
         let answer = question.answers[i];
