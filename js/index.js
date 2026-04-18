@@ -55,6 +55,7 @@ function loadQuestions(contents) {
 
 let examiner;
 let question;
+let reviewMode = false;
 
 /**
  * @brief creates the examiner and starts the exam
@@ -124,11 +125,16 @@ function skipQuestion() {
 }
 
 /**
- * @brief Navigates to a specific question by ID (only if it's in the active pool)
+ * @brief Navigates to a specific question by ID (pool or already answered)
  */
 function goToQuestion(questionId) {
     let q = examiner.GoToQuestion(questionId);
-    if (!q) return;
+    reviewMode = !q;
+
+    if (reviewMode) {
+        q = examiner.GetQuestionDataById(questionId);
+        if (!q) return;
+    }
 
     question = q;
 
@@ -139,6 +145,18 @@ function goToQuestion(questionId) {
 
     cleanUpHolders();
     interpretQuestion(question);
+
+    if (reviewMode) {
+        hideSkipButton();
+        let checkBtn = document.getElementById("checkButton");
+        checkBtn.innerHTML = "Continue";
+        checkBtn.onclick = exitReviewMode;
+    }
+}
+
+function exitReviewMode() {
+    reviewMode = false;
+    nextQuestion();
 }
 
 /**

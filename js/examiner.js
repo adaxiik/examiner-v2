@@ -97,7 +97,7 @@ class Examiner {
             qElement.innerText = key + 1;
             qElement.id = 'question-list-item-' + question.id;
             if (question.question && question.question.type === 'text') {
-                qElement.title = question.question.content;
+                setupTooltip(qElement, question.question.content);
             }
             qElement.onclick = function() { goToQuestion(question.id); };
             qListElement.appendChild(qElement);
@@ -111,6 +111,10 @@ class Examiner {
             this.FillQuestionPool();
         }
         return this.questionPool.GetRandomQuestion();
+    }
+
+    GetQuestionDataById(id) {
+        return this.questions.find(q => q.id === id) || null;
     }
 
     GoToQuestion(id) {

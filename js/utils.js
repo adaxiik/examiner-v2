@@ -106,6 +106,37 @@ function loadFromURL(url) {
 }
 
 
+let _tooltip = null;
+function _getTooltip() {
+    if (!_tooltip) {
+        _tooltip = document.createElement('div');
+        _tooltip.style.cssText = 'position:fixed;background:#1a1a1a;color:white;padding:5px 10px;border-radius:4px;font-size:0.85rem;max-width:300px;z-index:9999;pointer-events:none;display:none;word-wrap:break-word;border:1px solid #444;line-height:1.4;';
+        document.body.appendChild(_tooltip);
+    }
+    return _tooltip;
+}
+
+function setupTooltip(element, text) {
+    element.addEventListener('mouseenter', function () {
+        let t = _getTooltip();
+        t.innerText = text;
+        t.style.display = 'block';
+    });
+    element.addEventListener('mousemove', function (e) {
+        let t = _getTooltip();
+        let x = e.clientX + 15;
+        let y = e.clientY + 10;
+        if (x + 300 > window.innerWidth) x = e.clientX - 310;
+        if (y + 60 > window.innerHeight) y = e.clientY - 50;
+        t.style.left = x + 'px';
+        t.style.top = y + 'px';
+    });
+    element.addEventListener('mouseleave', function () {
+        _getTooltip().style.display = 'none';
+    });
+    element.dataset.tooltipText = text;
+}
+
 function toggleSearch() {
     let bar = document.getElementById('questionSearchBar');
     bar.hidden = !bar.hidden;
@@ -124,7 +155,7 @@ function searchQuestions(value) {
         if (!query) {
             item.style.display = '';
         } else {
-            let title = (item.title || '').toLowerCase();
+            let title = (item.dataset.tooltipText || '').toLowerCase();
             let number = item.innerText.trim();
             item.style.display = (title.includes(query) || number === query) ? '' : 'none';
         }

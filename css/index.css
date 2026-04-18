@@ -335,6 +335,7 @@ p.answer.notselected:hover {
     font-size: 0.85rem;
     padding: 0 14px;
     letter-spacing: 0.05em;
+    color: white !important;
 }
 
 .exit-button {
