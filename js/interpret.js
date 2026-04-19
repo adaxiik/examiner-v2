@@ -175,6 +175,9 @@ function dismissAnswer(id) {
 
     if (readOnly) return;
 
+    const btnRow = document.createElement('div');
+    btnRow.className = 'self-assessment-btn-row';
+
     const correctButtonFn = function () {
         let questionTime = examiner.totalElapsed - questionStartElapsed;
         stats.correctAttempts++;
@@ -195,7 +198,7 @@ function dismissAnswer(id) {
         console.log("Correct");
         nextQuestion();
     };
-    answersHolder.appendChild(createCorrectBtn(correctButtonFn));
+    btnRow.appendChild(createCorrectBtn(correctButtonFn));
 
     const incorrectButtonFn = function () {
         stats.wrongAttempts++;
@@ -208,5 +211,6 @@ function dismissAnswer(id) {
         nextQuestion();
     };
 
-    answersHolder.appendChild(createIncorrectBtn(incorrectButtonFn));
+    btnRow.appendChild(createIncorrectBtn(incorrectButtonFn));
+    answersHolder.appendChild(btnRow);
 }

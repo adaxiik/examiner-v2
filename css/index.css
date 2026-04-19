@@ -314,6 +314,12 @@ p.answer.notselected:hover {
     margin: 0 auto;
 }
 
+.self-assessment-btn-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
 .self-assessment-button-correct {
     background-color: #2d8d2d;
     height: 5vw;
