@@ -91,9 +91,32 @@ function markAsBad() {
     nextQuestion();
 }
 
+function goBack() {
+    let prev = examiner.PopFromHistory();
+    if (!prev) return;
+
+    showCheckButton();
+    showBadButton();
+    examiner.SetCurrentQuestion(prev);
+    question = prev;
+
+    if (!examiner.HasHistory) hideBackButton();
+
+    Array.from(document.getElementById('questionList').getElementsByClassName('active')).forEach(x => x.classList.remove('active'));
+    document.getElementById("question-list-item-" + question["id"]).classList.add("active");
+
+    cleanUpHolders();
+    interpretQuestion(question);
+}
+
 function nextQuestion() {
     showCheckButton();
     showBadButton();
+
+    if (question) {
+        examiner.PushToHistory(question);
+        showBackButton();
+    }
 
     question = examiner.GetQuestion();
 

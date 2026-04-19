@@ -364,6 +364,22 @@ p.answer.notselected:hover {
     color: white;
 }
 
+.back-button {
+    position: absolute;
+    top: 0;
+    left: 4.2rem;
+    width: 4rem;
+    padding: 0rem;
+    background: #3a3a3a;
+    color: #ccc;
+}
+
+.back-button:hover,
+.back-button:focus {
+    background: #505050;
+    color: white;
+}
+
 .legend {
     display: block;
     text-align: center;

@@ -52,6 +52,15 @@ class QuestionPool {
         this.questions.push(question);
     }
 
+    SetCurrentQuestion(question) {
+        let idx = this.questions.indexOf(question);
+        if (idx !== -1) {
+            this.currentQuestion = idx;
+            return true;
+        }
+        return false;
+    }
+
     get IsFull() {
         return this.questions.length >= this.size;
     }
@@ -81,6 +90,7 @@ class Examiner {
         this.questionIndex = 0;
         this.end = false;
         this.questionPool = new QuestionPool(poolsize);
+        this.questionHistory = [];
 
         this.startTime = new Date();
         let qListElement = document.getElementById('questionList');
@@ -103,6 +113,25 @@ class Examiner {
 
     RemoveCurrentQuestion() {
         this.questionPool.RemoveCurrentQuestion();
+    }
+
+    PushToHistory(q) {
+        this.questionHistory.push(q);
+    }
+
+    PopFromHistory() {
+        return this.questionHistory.pop();
+    }
+
+    get HasHistory() {
+        return this.questionHistory.length > 0;
+    }
+
+    SetCurrentQuestion(question) {
+        if (!this.questionPool.SetCurrentQuestion(question)) {
+            this.questionPool.AddQuestion(question);
+            this.questionPool.SetCurrentQuestion(question);
+        }
     }
 
     get IsEnd() {

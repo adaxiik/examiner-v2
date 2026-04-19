@@ -73,6 +73,14 @@ function showBadButton() {
     document.getElementById("badButton").hidden = false;
 }
 
+function hideBackButton() {
+    document.getElementById("backButton").hidden = true;
+}
+
+function showBackButton() {
+    document.getElementById("backButton").hidden = false;
+}
+
 /**
  * @brief Clean up question and answers holders
  */
