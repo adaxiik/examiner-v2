@@ -364,6 +364,17 @@ p.answer.notselected:hover {
     color: white;
 }
 
+.bad-button.bad-active {
+    background: #7a4a00;
+    color: #ffb700;
+}
+
+.bad-button.bad-active:hover,
+.bad-button.bad-active:focus {
+    background: #8a5a00;
+    color: #ffc700;
+}
+
 .back-button {
     position: absolute;
     top: 0;

@@ -81,14 +81,26 @@ function playGame(dlc) {
  * 
  */
 function markAsBad() {
-    hideBadButton();
-    examiner.RemoveCurrentQuestion();
-    document.getElementById('question-list-item-' + question.id).classList.add("bad");
-    if (examiner.IsEnd) {
-        showEndscreen("Congratulations!", "You have answered all questions correctly!");
-        return;
+    let listItem = document.getElementById('question-list-item-' + question.id);
+    let btn = document.getElementById("badButton");
+    if (question.bad) {
+        question.bad = false;
+        listItem.classList.remove("bad");
+        btn.classList.remove("bad-active");
+    } else {
+        question.bad = true;
+        listItem.classList.add("bad");
+        btn.classList.add("bad-active");
     }
-    nextQuestion();
+}
+
+function updateBadButtonState() {
+    let btn = document.getElementById("badButton");
+    if (question.bad) {
+        btn.classList.add("bad-active");
+    } else {
+        btn.classList.remove("bad-active");
+    }
 }
 
 function goBack() {
@@ -106,6 +118,7 @@ function goBack() {
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
+    updateBadButtonState();
     interpretQuestion(question);
 }
 
@@ -127,14 +140,7 @@ function nextQuestion() {
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
-
-    // interpretData(question["question"], "questionHolder", -1);
-
-    // // for self assessment questions
-    // if (question.hasOwnProperty("type") && question["type"] == "self-assessment") {
-    //     interpretSelfAssessment(showAnswer);
-    //     return;
-    // }
+    updateBadButtonState();
     interpretQuestion(question);
 
     // dont shuffle answers for self assessment questions
@@ -155,7 +161,6 @@ function nextQuestion() {
  * 
  */
 function checkAnswers() {
-    hideBadButton();
     let allcorrect = true;
     for (let i = 0; i < question.answers.length; i++) {
         let answer = question.answers[i];
