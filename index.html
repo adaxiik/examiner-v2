@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="check-skip-row">
-                    <button id="prevButton" class="uk-button uk-button-default" type="button" onclick="prevQuestion()" title="Předchozí otázka" disabled>PREV</button>
+                    <button id="prevButton" class="uk-button uk-button-default" type="button" onclick="prevQuestion()" title="Previous question" disabled>PREV</button>
                     <button id="checkButton" class="uk-button uk-button-primary" type="button" onclick="checkAnswers()">Check</button>
                     <button id="skipButton" class="uk-button uk-button-default" type="button" onclick="skipQuestion()">Skip</button>
                 </div>
@@ -88,17 +88,17 @@
             <div class="uk-width-1-4@l uk-width-1-5@xl">
                 <div class="sidebar">
                     <span class="section-title darker">Time
-                        <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pozastavit/Obnovit">⏸</button>
+                        <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pause/Continue">⏸</button>
                     </span>
                     <span class="timer" id="timer">
                         <!-- JS: Timer --> 00 : 00
                     </span>
 
                     <span class="section-title darker">Questions
-                        <button class="search-toggle-btn" onclick="toggleSearch()" title="Hledat otázky"><span uk-icon="search"></span></button>
+                        <button class="search-toggle-btn" onclick="toggleSearch()" title="Search question"><span uk-icon="search"></span></button>
                     </span>
                     <div class="question-search-bar" id="questionSearchBar" hidden>
-                        <input type="text" id="questionSearch" class="question-search-input" placeholder="Hledat..." oninput="searchQuestions(this.value)">
+                        <input type="text" id="questionSearch" class="question-search-input" placeholder="Search..." oninput="searchQuestions(this.value)">
                     </div>
                     <div class="question-list" id="questionList">
                         <!-- JS: Question List -->
