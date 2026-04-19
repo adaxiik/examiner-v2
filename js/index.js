@@ -493,7 +493,7 @@ function renderRecentFiles() {
         let delBtn = document.createElement('button');
         delBtn.className = 'recent-file-delete';
         delBtn.innerHTML = '&times;';
-        delBtn.title = 'Odstranit ze seznamu';
+        delBtn.title = 'Remove from list';
         delBtn.onclick = function (e) {
             e.stopPropagation();
             deleteFromRecent(index);
