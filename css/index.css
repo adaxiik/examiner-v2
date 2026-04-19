@@ -513,6 +513,18 @@ p.answer.notselected:hover {
     color: white !important;
 }
 
+#prevButton {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    padding: 0 14px;
+    color: white !important;
+}
+
+#prevButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
 .exit-button {
     position: absolute;
     top: 0;
@@ -611,4 +623,142 @@ p.answer.notselected:hover {
 .finish-exam-btn:hover {
     color: #f44336 !important;
     border-color: #f44336;
+}
+
+/* ── Dismiss answer button ─────────────────────────────────────────────────── */
+
+.answer-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.answer-wrapper p.answer {
+    flex: 1;
+    margin: 1em 10px;
+}
+
+.answer-wrapper .uk-img-container {
+    flex: 1;
+}
+
+.dismiss-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid #555;
+    color: #777;
+    border-radius: 50%;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-right: 10px;
+    transition: color 0.1s, border-color 0.1s;
+    padding: 0;
+}
+
+.dismiss-btn:hover {
+    color: #f44336;
+    border-color: #f44336;
+}
+
+p.answer.dismissed {
+    opacity: 0.3;
+    text-decoration: line-through;
+    pointer-events: none;
+}
+
+/* ── Stats table – scrollable list ────────────────────────────────────────── */
+
+.stats-table-wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    max-height: 26rem;
+    overflow-y: auto;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+}
+
+.stats-table-row {
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.stats-table-row:hover {
+    background: #2a2a2a;
+}
+
+/* ── Question preview modal ───────────────────────────────────────────────── */
+
+#questionModal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#questionModal[hidden] { display: none; }
+
+#questionModalContent {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 680px;
+    width: 92%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+#questionModalClose {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.8rem;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.6rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.1s;
+}
+
+#questionModalClose:hover {
+    color: #f44336;
+}
+
+.modal-question {
+    color: white;
+    font-size: 1.15rem;
+    font-weight: bold;
+    margin-bottom: 1.4rem;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.modal-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.modal-answer {
+    color: #bbb;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: #242424;
+    font-size: 0.95rem;
+    font-weight: normal;
+    text-align: left;
+}
+
+.modal-answer.correct {
+    box-shadow: inset 0 0 0 2px #4caf50;
+    color: #4caf50;
 }

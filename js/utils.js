@@ -19,8 +19,8 @@ function shuffle(array) {
 
 /**
  * @brief shows end/error message
- * @param {*} title 
- * @param {*} subtitle 
+ * @param {*} title
+ * @param {*} subtitle
  */
 function showEndscreen(title, subtitle) {
     document.getElementById("examiner").hidden = true;
@@ -38,7 +38,7 @@ function showConfirmscreen(origin,text,confirmFn) {
     document.getElementById("confirmButton").onclick = function() {
         document.getElementById("confirmScreen").hidden = true;
         confirmFn();
-    } 
+    }
     document.getElementById("cancelButton").onclick = function () {
         document.getElementById("confirmScreen").hidden = true;
         document.getElementById(origin).hidden = false;
@@ -48,7 +48,7 @@ function showConfirmscreen(origin,text,confirmFn) {
 
 /**
  * @brief Set title of the page and setup screen
- * @param {*} dlcname 
+ * @param {*} dlcname
  */
 function showExaminer(dlcname) {
     document.getElementById("title").hidden = true;
@@ -212,6 +212,7 @@ function showStats(statsData, questions) {
 
     if (wrongEntries.length > 0) {
         html += `<p class="stats-section-title">Chybně zodpovězené otázky</p>
+        <div class="stats-table-wrapper">
         <table class="stats-table">
             <thead><tr><th>Otázka</th><th style="text-align:center;">Špatných pokusů</th></tr></thead>
             <tbody>`;
@@ -219,14 +220,77 @@ function showStats(statsData, questions) {
             let q = questions.find(q => String(q.id) === String(id));
             let text = (q && q.question && q.question.type === 'text')
                 ? (q.question.content.length > 90 ? q.question.content.substring(0, 90) + '…' : q.question.content)
-                : `Otázka ID ${id}`;
-            html += `<tr><td>${text}</td><td>${count}</td></tr>`;
+                : 'Otázka ID ' + id;
+            let safeText = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            html += `<tr class="stats-table-row" data-qid="${id}" onclick="showQuestionModal('${id}')">` +
+                `<td>${safeText}</td><td>${count}</td></tr>`;
         }
-        html += `</tbody></table>`;
+        html += `</tbody></table></div>`;
     }
 
     holder.innerHTML = html;
 }
+
+function showQuestionModal(qid) {
+    let allQuestions = (examiner && examiner.questions) ? examiner.questions : (currentDlcData ? currentDlcData.data : []);
+    let q = allQuestions.find(q => String(q.id) === String(qid));
+    if (!q) return;
+
+    let modal = document.getElementById('questionModal');
+    let body = document.getElementById('questionModalBody');
+    body.innerHTML = '';
+
+    // Question
+    let qDiv = document.createElement('div');
+    qDiv.className = 'modal-question';
+    if (q.question.type === 'text') {
+        qDiv.textContent = q.question.content;
+    } else if (q.question.type === 'image') {
+        let img = document.createElement('img');
+        img.src = q.question.src;
+        img.style.maxWidth = '100%';
+        qDiv.appendChild(img);
+    }
+    body.appendChild(qDiv);
+
+    // Answers
+    if (q.answers && q.answers.length > 0) {
+        let aDiv = document.createElement('div');
+        aDiv.className = 'modal-answers';
+
+        q.answers.forEach(function(a) {
+            let el = document.createElement('div');
+            el.className = 'modal-answer' + (a.correct ? ' correct' : '');
+            if (a.type === 'text') {
+                el.textContent = a.content;
+            } else if (a.type === 'image') {
+                let img = document.createElement('img');
+                img.src = a.src;
+                img.style.maxWidth = '100%';
+                el.appendChild(img);
+            } else if (a.type === 'text-md') {
+                el.textContent = a.content;
+            }
+            aDiv.appendChild(el);
+        });
+
+        body.appendChild(aDiv);
+    }
+
+    modal.hidden = false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    let closeBtn = document.getElementById('questionModalClose');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            document.getElementById('questionModal').hidden = true;
+        };
+    }
+    document.getElementById('questionModal').addEventListener('click', function(e) {
+        if (e.target === this) this.hidden = true;
+    });
+});
 
 function createCorrectBtn(fn) {
     let correctButton = document.createElement("button");
