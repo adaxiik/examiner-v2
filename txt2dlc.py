@@ -24,7 +24,7 @@ def main():
         print("Usage: txt2dlc.py <file>")
         sys.exit(1)
     
-    with open(sys.argv[1], 'r') as f:
+    with open(sys.argv[1], 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
     lines = [line.strip() for line in lines]    
