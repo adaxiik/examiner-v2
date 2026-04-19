@@ -80,35 +80,11 @@ function playGame(dlc) {
  * @brief Shows the next question
  * 
  */
-function markAsBad() {
-    let listItem = document.getElementById('question-list-item-' + question.id);
-    let btn = document.getElementById("badButton");
-    if (question.bad) {
-        question.bad = false;
-        listItem.classList.remove("bad");
-        btn.classList.remove("bad-active");
-    } else {
-        question.bad = true;
-        listItem.classList.add("bad");
-        btn.classList.add("bad-active");
-    }
-}
-
-function updateBadButtonState() {
-    let btn = document.getElementById("badButton");
-    if (question.bad) {
-        btn.classList.add("bad-active");
-    } else {
-        btn.classList.remove("bad-active");
-    }
-}
-
 function goBack() {
     let prev = examiner.PopFromHistory();
     if (!prev) return;
 
     showCheckButton();
-    showBadButton();
     examiner.SetCurrentQuestion(prev);
     question = prev;
 
@@ -118,13 +94,11 @@ function goBack() {
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
-    updateBadButtonState();
     interpretQuestion(question);
 }
 
 function nextQuestion() {
     showCheckButton();
-    showBadButton();
 
     if (question) {
         examiner.PushToHistory(question);
@@ -140,7 +114,6 @@ function nextQuestion() {
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
-    updateBadButtonState();
     interpretQuestion(question);
 
     // dont shuffle answers for self assessment questions

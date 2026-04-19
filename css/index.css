@@ -343,36 +343,42 @@ p.answer.notselected:hover {
     background: #ffc107;
 }
 
-.question-list .bad::before,
-.legend .bad {
-    background: #666666;
+.answer-wrapper {
+    position: relative;
 }
 
-.bad-button {
+.bad-answer-btn {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 4rem;
-    padding: 0rem;
-    background: #555;
-    color: #ccc;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0.2rem;
+    opacity: 0.25;
+    transition: opacity 0.15s;
+    z-index: 1;
 }
 
-.bad-button:hover,
-.bad-button:focus {
-    background: #6a6a6a;
-    color: white;
+.bad-answer-btn:hover,
+.bad-answer-btn:focus {
+    opacity: 0.75;
+    background: transparent;
 }
 
-.bad-button.bad-active {
-    background: #7a4a00;
-    color: #ffb700;
+.bad-answer-btn.bad-active {
+    opacity: 1;
+    color: #ff6b6b;
 }
 
-.bad-button.bad-active:hover,
-.bad-button.bad-active:focus {
-    background: #8a5a00;
-    color: #ffc700;
+p.answer.bad {
+    opacity: 0.35;
+}
+
+img.answer.bad {
+    opacity: 0.3;
 }
 
 .back-button {

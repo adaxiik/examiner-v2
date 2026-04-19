@@ -45,17 +45,54 @@ function addAnswersToHolder(answers){
 
     for (let i = 0; i < answers.length; i++) {
         answers[i]["selected"] = false;
+
+        let wrapper = document.createElement("div");
+        wrapper.className = "answer-wrapper";
+
         switch (answers[i]["type"]) {
             case "text":
-                addTextToHolder(aholder, answers[i]["content"], true, i);
+                addTextToHolder(wrapper, answers[i]["content"], true, i);
                 break;
             case "image":
-                addImageToHolder(aholder, answers[i]["src"], true, i);
+                addImageToHolder(wrapper, answers[i]["src"], true, i);
                 break;
             default:
                 alert("Error: unknown answer type - addAnswersToHolder");
                 break;
         }
+
+        let badBtn = document.createElement("button");
+        badBtn.id = "bad-answer-btn-" + i;
+        badBtn.className = "bad-answer-btn" + (answers[i].bad ? " bad-active" : "");
+        badBtn.title = "Označit odpověď jako špatnou";
+        badBtn.innerHTML = "<span uk-icon='icon: ban; ratio: 0.8'></span>";
+        badBtn.onclick = (function(idx) {
+            return function(e) { e.stopPropagation(); toggleBadAnswer(idx); };
+        })(i);
+        wrapper.appendChild(badBtn);
+
+        if (answers[i].bad) {
+            let answerEl = document.getElementById("answer-" + i);
+            if (answerEl) answerEl.classList.add("bad");
+        }
+
+        aholder.appendChild(wrapper);
+    }
+}
+
+function toggleBadAnswer(id) {
+    let answer = question.answers[id];
+    let answerEl = document.getElementById("answer-" + id);
+    let badBtn = document.getElementById("bad-answer-btn-" + id);
+
+    if (answer.bad) {
+        answer.bad = false;
+        answerEl.classList.remove("bad");
+        badBtn.classList.remove("bad-active");
+    } else {
+        answer.bad = true;
+        answerEl.classList.add("bad");
+        badBtn.classList.add("bad-active");
     }
 }
 

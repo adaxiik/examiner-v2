@@ -65,14 +65,6 @@ function showCheckButton() {
     document.getElementById("checkButton").hidden = false;
 }
 
-function hideBadButton() {
-    document.getElementById("badButton").hidden = true;
-}
-
-function showBadButton() {
-    document.getElementById("badButton").hidden = false;
-}
-
 function hideBackButton() {
     document.getElementById("backButton").hidden = true;
 }
