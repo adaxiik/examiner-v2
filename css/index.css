@@ -338,9 +338,30 @@ p.answer.notselected:hover {
     background: #4caf50;
 }
 
-.question-list .correct.wrong::before, 
+.question-list .correct.wrong::before,
 .legend .correct.wrong {
     background: #ffc107;
+}
+
+.question-list .bad::before,
+.legend .bad {
+    background: #666666;
+}
+
+.bad-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4rem;
+    padding: 0rem;
+    background: #555;
+    color: #ccc;
+}
+
+.bad-button:hover,
+.bad-button:focus {
+    background: #6a6a6a;
+    color: white;
 }
 
 .legend {

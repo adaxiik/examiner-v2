@@ -80,8 +80,20 @@ function playGame(dlc) {
  * @brief Shows the next question
  * 
  */
+function markAsBad() {
+    hideBadButton();
+    examiner.RemoveCurrentQuestion();
+    document.getElementById('question-list-item-' + question.id).classList.add("bad");
+    if (examiner.IsEnd) {
+        showEndscreen("Congratulations!", "You have answered all questions correctly!");
+        return;
+    }
+    nextQuestion();
+}
+
 function nextQuestion() {
     showCheckButton();
+    showBadButton();
 
     question = examiner.GetQuestion();
 
@@ -120,6 +132,7 @@ function nextQuestion() {
  * 
  */
 function checkAnswers() {
+    hideBadButton();
     let allcorrect = true;
     for (let i = 0; i < question.answers.length; i++) {
         let answer = question.answers[i];

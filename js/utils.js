@@ -65,6 +65,14 @@ function showCheckButton() {
     document.getElementById("checkButton").hidden = false;
 }
 
+function hideBadButton() {
+    document.getElementById("badButton").hidden = true;
+}
+
+function showBadButton() {
+    document.getElementById("badButton").hidden = false;
+}
+
 /**
  * @brief Clean up question and answers holders
  */

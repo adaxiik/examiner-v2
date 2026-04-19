@@ -51,10 +51,12 @@
                         onclick="(function(){showConfirmscreen('examiner','Are you sure you want to leave?<br>All your progress will be lost!',function(){window.location.reload();})})()"><a
                             class="uk-link-reset" uk-icon="icon: sign-out; ratio: 1.1;"></a></button>
 
-
                     <span id="dlc-name">
                         Examiner v2
                     </span>
+
+                    <button id="badButton" class="bad-button uk-button" type="button" onclick="markAsBad()" title="Označit otázku jako špatnou"><a
+                            class="uk-link-reset" uk-icon="icon: ban; ratio: 1.1;"></a></button>
                 </div>
 
                 <div id="questionHolder">
@@ -92,6 +94,7 @@
                         <span class="circle correct"></span> Correct
                         <span class="circle wrong"></span> Wrong
                         <span class="circle correct wrong"></span> Corrected
+                        <span class="circle bad"></span> Bad
                     </div>
                     <!--
                     <span class="section-title darker">Statistics</span>
