@@ -130,6 +130,18 @@
     flex-shrink: 0;
 }
 
+.recent-file-tag {
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: bold;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    background: #1e87f0;
+    color: white;
+}
+
 .recent-file-delete {
     background: none;
     border: none;

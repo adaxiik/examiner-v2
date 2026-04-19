@@ -473,6 +473,7 @@ function renderRecentFiles() {
     panel.hidden = false;
     let list = document.getElementById('recentFilesList');
     list.innerHTML = '';
+    let savedSession = getSavedSession();
     recent.forEach(function (file, index) {
         let date = new Date(file.timestamp).toLocaleString('cs-CZ', {
             day: '2-digit', month: '2-digit', year: 'numeric',
@@ -490,16 +491,15 @@ function renderRecentFiles() {
         dateSpan.className = 'recent-file-date';
         dateSpan.textContent = date;
 
-        let delBtn = document.createElement('button');
-        delBtn.className = 'recent-file-delete';
-        delBtn.innerHTML = '&times;';
-        delBtn.title = 'Remove from list';
-        delBtn.onclick = function (e) {
-            e.stopPropagation();
-            deleteFromRecent(index);
-        };
-
         item.appendChild(nameSpan);
+
+        if (savedSession && savedSession.dlcName === file.name) {
+            let tag = document.createElement('span');
+            tag.className = 'recent-file-tag';
+            tag.textContent = 'In Progress';
+            item.appendChild(tag);
+        }
+
         item.appendChild(dateSpan);
         item.appendChild(delBtn);
         list.appendChild(item);
