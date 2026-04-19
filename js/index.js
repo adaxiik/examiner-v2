@@ -225,7 +225,7 @@ function togglePause() {
 function confirmFinish() {
     showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
         clearSavedSession();
-        showEndscreen("Ukončeno", "Zkoušení bylo předčasně ukončeno.");
+        showEndscreen("Finished", "The exam was terminated early.");
         showStats(stats, examiner.questions);
     });
 }

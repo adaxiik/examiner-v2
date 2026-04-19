@@ -182,27 +182,27 @@ function showStats(statsData, questions) {
     let html = `<div class="stats-grid">
         <div class="stats-card correct">
             <span class="stats-card-value">${statsData.correctAttempts}</span>
-            <span class="stats-card-label">Správně zodpovězeno</span>
+            <span class="stats-card-label">Answered Correctly</span>
         </div>
         <div class="stats-card wrong">
             <span class="stats-card-value">${statsData.wrongAttempts}</span>
-            <span class="stats-card-label">Špatných pokusů</span>
+            <span class="stats-card-label">Wrong Attempts</span>
         </div>
         <div class="stats-card corrected">
             <span class="stats-card-value">${statsData.correctedCount}</span>
-            <span class="stats-card-label">Opraveno</span>
+            <span class="stats-card-label">Corrected</span>
         </div>
         <div class="stats-card skipped">
             <span class="stats-card-value">${statsData.skippedCount}</span>
-            <span class="stats-card-label">Přeskočeno</span>
+            <span class="stats-card-label">Skipped</span>
         </div>
         <div class="stats-card">
             <span class="stats-card-value">${fmtTime(avgMs)}</span>
-            <span class="stats-card-label">Průměrný čas odpovědi</span>
+            <span class="stats-card-label">Average Answer Time</span>
         </div>
         <div class="stats-card">
             <span class="stats-card-value">${fmtTime(maxMs)}</span>
-            <span class="stats-card-label">Nejdelší čas odpovědi</span>
+            <span class="stats-card-label">Longest Answer Time</span>
         </div>
     </div>`;
 
@@ -211,16 +211,16 @@ function showStats(statsData, questions) {
         .sort((a, b) => b[1] - a[1]);
 
     if (wrongEntries.length > 0) {
-        html += `<p class="stats-section-title">Chybně zodpovězené otázky</p>
+        html += `<p class="stats-section-title">Incorrectly Answered Questions</p>
         <div class="stats-table-wrapper">
         <table class="stats-table">
-            <thead><tr><th>Otázka</th><th style="text-align:center;">Špatných pokusů</th></tr></thead>
+            <thead><tr><th>Question</th><th style="text-align:center;">Wrong Attempts</th></tr></thead>
             <tbody>`;
         for (let [id, count] of wrongEntries) {
             let q = questions.find(q => String(q.id) === String(id));
             let text = (q && q.question && q.question.type === 'text')
                 ? (q.question.content.length > 90 ? q.question.content.substring(0, 90) + '…' : q.question.content)
-                : 'Otázka ID ' + id;
+                : 'Question ID ' + id;
             let safeText = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             html += `<tr class="stats-table-row" data-qid="${id}" onclick="showQuestionModal('${id}')">` +
                 `<td>${safeText}</td><td>${count}</td></tr>`;
