@@ -491,6 +491,15 @@ function renderRecentFiles() {
         dateSpan.className = 'recent-file-date';
         dateSpan.textContent = date;
 
+        let delBtn = document.createElement('button');
+        delBtn.className = 'recent-file-delete';
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove from list';
+        delBtn.onclick = function (e) {
+            e.stopPropagation();
+            deleteFromRecent(index);
+        };
+
         item.appendChild(nameSpan);
 
         if (savedSession && savedSession.dlcName === file.name) {
