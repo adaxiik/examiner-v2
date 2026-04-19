@@ -269,7 +269,13 @@ function showQuestionModal(qid) {
                 img.style.maxWidth = '100%';
                 el.appendChild(img);
             } else if (a.type === 'text-md') {
-                el.textContent = a.content;
+                let mdEl = document.createElement('zero-md');
+                mdEl.setAttribute('src', 'data:text/plain;charset=utf-8,' + encodeURIComponent(a.content));
+                let tpl = document.createElement('template');
+                tpl.innerHTML = '<link rel="stylesheet" href="css/md.css?v=6">'
+                    + '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"/>';
+                mdEl.appendChild(tpl);
+                el.appendChild(mdEl);
             }
             aDiv.appendChild(el);
         });
