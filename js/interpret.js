@@ -8,7 +8,7 @@ function interpretQuestion(question){
     var checkbtn = document.getElementById("checkButton");
     switch (question["type"]) {
         case "self-assessment":
-            checkbtn.onclick = showAnswer;
+            checkbtn.onclick = function() { showAnswer(false); };
             checkbtn.innerHTML = "Show Answer";
             break;
         case "question-with-answers":
@@ -21,7 +21,7 @@ function interpretQuestion(question){
             alert("Error: unknown question type");
             break;
         }
-        
+
 }
 
 
@@ -45,17 +45,36 @@ function addAnswersToHolder(answers){
 
     for (let i = 0; i < answers.length; i++) {
         answers[i]["selected"] = false;
+        answers[i]["dismissed"] = false;
+
+        let wrapper = document.createElement("div");
+        wrapper.className = "answer-wrapper";
+
         switch (answers[i]["type"]) {
             case "text":
-                addTextToHolder(aholder, answers[i]["content"], true, i);
+                addTextToHolder(wrapper, answers[i]["content"], true, i);
                 break;
             case "image":
-                addImageToHolder(aholder, answers[i]["src"], true, i);
+                addImageToHolder(wrapper, answers[i]["src"], true, i);
                 break;
             default:
                 alert("Error: unknown answer type - addAnswersToHolder");
                 break;
         }
+
+        let dismissBtn = document.createElement("button");
+        dismissBtn.className = "dismiss-btn";
+        dismissBtn.title = "Označit jako špatnou";
+        dismissBtn.innerHTML = "✕";
+        (function(idx) {
+            dismissBtn.onclick = function(e) {
+                e.stopPropagation();
+                dismissAnswer(idx);
+            };
+        })(i);
+        wrapper.appendChild(dismissBtn);
+
+        aholder.appendChild(wrapper);
     }
 }
 
@@ -102,6 +121,7 @@ function addImageToHolder(holder, src, isAnswer = false, id = -1){
 
 function select(id) {
     if (examiner && examiner.paused) return;
+    if (question["answers"][id]["dismissed"]) return;
     console.log("Selected " + id);
     if (question["answers"][id]["selected"]) {
         question["answers"][id]["selected"] = false;
@@ -113,13 +133,25 @@ function select(id) {
     }
 }
 
+function dismissAnswer(id) {
+    let ans = question.answers[id];
+    let el = document.getElementById("answer-" + id);
+    ans.dismissed = !ans.dismissed;
+    el.classList.toggle("dismissed");
+    if (ans.dismissed && ans.selected) {
+        ans.selected = false;
+        el.classList.remove("selected");
+    }
+}
 
 
 /**
  * @brief show answer function for self assessment questions
+ * @param {boolean} readOnly  true = display only, no correct/incorrect buttons
  */
- function showAnswer() {
-    hideCheckButton();
+ function showAnswer(readOnly) {
+    readOnly = readOnly === true;
+    if (!readOnly) hideCheckButton();
     const answersHolder = document.getElementById("answersHolder");
 
     for (let i = 0; i < question["answers"].length; i++) {
@@ -137,11 +169,14 @@ function select(id) {
                 break;
             default:
                 alert("Error: unknown answer type - " + question["answers"][i]["type"]);
-
                 break;
         }
     }
 
+    if (readOnly) return;
+
+    const btnRow = document.createElement('div');
+    btnRow.className = 'self-assessment-btn-row';
 
     const correctButtonFn = function () {
         let questionTime = examiner.totalElapsed - questionStartElapsed;
@@ -153,7 +188,9 @@ function select(id) {
         listItem.classList.remove("skipped");
         listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
+        saveSession();
         if (examiner.IsEnd) {
+            clearSavedSession();
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
             showStats(stats, examiner.questions);
             return;
@@ -161,7 +198,7 @@ function select(id) {
         console.log("Correct");
         nextQuestion();
     };
-    answersHolder.appendChild(createCorrectBtn(correctButtonFn));
+    btnRow.appendChild(createCorrectBtn(correctButtonFn));
 
     const incorrectButtonFn = function () {
         stats.wrongAttempts++;
@@ -169,9 +206,11 @@ function select(id) {
         let listItem = document.getElementById('question-list-item-' + question.id);
         listItem.classList.remove("skipped");
         listItem.classList.add("wrong");
+        saveSession();
         console.log("incorrect");
         nextQuestion();
     };
 
-    answersHolder.appendChild(createIncorrectBtn(incorrectButtonFn));
+    btnRow.appendChild(createIncorrectBtn(incorrectButtonFn));
+    answersHolder.appendChild(btnRow);
 }

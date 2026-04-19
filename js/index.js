@@ -6,9 +6,9 @@ console.log("Currently supported question types: " + supportedQuestionTypes);
 
 
 /**
- * @brief Entry point 
+ * @brief Entry point
  * @param {*} e event
- * 
+ *
  */
 function readSingleFile(e) {
     var file = e.target.files[0];
@@ -30,9 +30,9 @@ function readSingleFile(e) {
 /**
  * @brief Loads the questions from the DLC file and starts the exam
  * @param {*} contents  .dlc file contents
- * @returns 
+ * @returns
  */
-function loadQuestions(contents, fileName) {
+function loadQuestions(contents, fileName, skipSessionCheck) {
     var questions;
     try {
         questions = JSON.parse(contents);
@@ -47,7 +47,27 @@ function loadQuestions(contents, fileName) {
 
     saveToRecent(fileName || questions["name"], contents);
 
+    currentDlcName = fileName || questions["name"];
+    currentDlcData = questions;
+
     console.log("Loaded " + questions["name"] + " dlc");
+
+    if (!skipSessionCheck) {
+        let saved = getSavedSession();
+        if (saved && saved.dlcName === currentDlcName) {
+            showConfirmscreen("title",
+                "Chcete pokračovat v předchozím zkoušení?<br><em>" + currentDlcName + "</em>",
+                function () { playGame(questions, saved); }
+            );
+            document.getElementById("cancelButton").onclick = function () {
+                document.getElementById("confirmScreen").hidden = true;
+                document.getElementById("title").hidden = false;
+                clearSavedSession();
+                loadQuestions(contents, fileName, true);
+            };
+            return;
+        }
+    }
 
     var uploadButton = document.getElementById("uploadButton");
     if (uploadButton) uploadButton.parentNode.removeChild(uploadButton);
@@ -59,6 +79,9 @@ let examiner;
 let question;
 let reviewMode = false;
 let questionStartElapsed = 0;
+let questionHistory = [];
+let currentDlcName = '';
+let currentDlcData = null;
 let stats = {
     correctAttempts: 0,
     wrongAttempts: 0,
@@ -68,15 +91,96 @@ let stats = {
     questionWrongCounts: {},
 };
 
+// ── Session persistence ──────────────────────────────────────────────────────
+
+const SESSION_KEY = 'examiner_session';
+
+function getSavedSession() {
+    try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch { return null; }
+}
+
+function clearSavedSession() {
+    localStorage.removeItem(SESSION_KEY);
+}
+
+function saveSession() {
+    if (!examiner) return;
+    try {
+        let state = {
+            dlcName: currentDlcName,
+            statsData: JSON.parse(JSON.stringify(stats)),
+            elapsedTime: examiner.totalElapsed,
+            questionsOrder: examiner.questions.map(q => q.id),
+            questionIndex: examiner.questionIndex,
+            end: examiner.end,
+            poolQuestionIds: examiner.questionPool.questions.map(q => q.id),
+            skippedIds: examiner.skippedQueue.map(q => q.id),
+            questionListClasses: getQuestionListClasses(),
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    } catch (e) {
+        console.warn('Could not save session:', e);
+    }
+}
+
+function getQuestionListClasses() {
+    let classes = {};
+    let items = document.getElementById('questionList').children;
+    for (let item of items) {
+        let id = item.id.replace('question-list-item-', '');
+        classes[id] = Array.from(item.classList);
+    }
+    return classes;
+}
+
+function restoreSession(savedState, allQuestions) {
+    let idToQ = {};
+    allQuestions.forEach(q => { idToQ[q.id] = q; });
+
+    examiner.questions = savedState.questionsOrder.map(id => idToQ[id]).filter(Boolean);
+    examiner.questionIndex = savedState.questionIndex;
+    examiner.end = savedState.end;
+
+    examiner.questionPool.questions = (savedState.poolQuestionIds || []).map(id => idToQ[id]).filter(Boolean);
+    examiner.questionPool.currentQuestion = 0;
+    examiner.questionPool.previousQuestion = 0;
+
+    examiner.skippedQueue = (savedState.skippedIds || []).map(id => idToQ[id]).filter(Boolean);
+
+    examiner.elapsedTime = savedState.elapsedTime || 0;
+    examiner.lastResumeTime = Date.now();
+    examiner.paused = false;
+
+    stats = savedState.statsData || stats;
+
+    if (savedState.questionListClasses) {
+        for (let [id, classes] of Object.entries(savedState.questionListClasses)) {
+            let item = document.getElementById('question-list-item-' + id);
+            if (item) {
+                item.className = '';
+                classes.forEach(c => { if (c) item.classList.add(c); });
+            }
+        }
+    }
+}
+
+// ── Game flow ────────────────────────────────────────────────────────────────
+
 /**
  * @brief creates the examiner and starts the exam
- * @param {*} dlc dlc object 
+ * @param {*} dlc dlc object
+ * @param {*} savedState optional saved session state
  */
-function playGame(dlc) {
+function playGame(dlc, savedState) {
+    var uploadButton = document.getElementById("uploadButton");
+    if (uploadButton) uploadButton.parentNode.removeChild(uploadButton);
+
     showExaminer(dlc.name);
 
-    poolsize = 5
-    if(dlc.hasOwnProperty("poolsize") && dlc.poolsize > 0)
+    poolsize = 5;
+    if (dlc.hasOwnProperty("poolsize") && dlc.poolsize > 0)
         poolsize = dlc.poolsize;
 
     console.log("DLC version: " + dlc.version);
@@ -84,13 +188,18 @@ function playGame(dlc) {
 
     examiner = new Examiner(dlc.data, poolsize);
     console.log("Loaded " + examiner.GetQuestionCount + " questions");
+
+    if (savedState) {
+        restoreSession(savedState, dlc.data);
+    }
+
     nextQuestion();
 }
 
 
 /**
  * @brief Shows the next question
- * 
+ *
  */
 function syncPauseState() {
     if (!examiner) return;
@@ -115,12 +224,21 @@ function togglePause() {
 
 function confirmFinish() {
     showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
-        showEndscreen("Ukončeno", "Zkoušení bylo předčasně ukončeno.");
+        clearSavedSession();
+        showEndscreen("Finished", "The exam was terminated early.");
         showStats(stats, examiner.questions);
     });
 }
 
+function updatePrevButton() {
+    let btn = document.getElementById('prevButton');
+    if (btn) btn.disabled = questionHistory.length === 0;
+}
+
 function nextQuestion() {
+    if (question) questionHistory.push(question.id);
+    updatePrevButton();
+
     showCheckButton();
     syncPauseState();
 
@@ -134,36 +252,28 @@ function nextQuestion() {
     document.getElementById("question-list-item-" + question["id"]).classList.add("active");
 
     cleanUpHolders();
-
-    // interpretData(question["question"], "questionHolder", -1);
-
-    // // for self assessment questions
-    // if (question.hasOwnProperty("type") && question["type"] == "self-assessment") {
-    //     interpretSelfAssessment(showAnswer);
-    //     return;
-    // }
     interpretQuestion(question);
-
-    // dont shuffle answers for self assessment questions
-    // 
-    
-    // for (let i = 0; i < question["answers"].length; i++) {
-    //     question["answers"][i]["selected"] = false;
-    //     interpretData(question["answers"][i], "answersHolder", i);
-    // }
-
-    
 }
 
+function prevQuestion() {
+    if (questionHistory.length === 0) return;
+    let prevId = questionHistory.pop();
+    updatePrevButton();
+    goToQuestion(prevId);
+}
 
 
 /**
  * @brief Skips the current question and marks it with a purple flag
  */
 function skipQuestion() {
+    if (question) questionHistory.push(question.id);
+    updatePrevButton();
+
     document.getElementById('question-list-item-' + question.id).classList.add("skipped");
     stats.skippedCount++;
     examiner.SkipCurrentQuestion();
+    saveSession();
     nextQuestion();
 }
 
@@ -192,6 +302,11 @@ function goToQuestion(questionId) {
 
     if (reviewMode) {
         hideSkipButton();
+
+        if (question.type === 'self-assessment') {
+            showAnswer(true);
+        }
+
         let checkBtn = document.getElementById("checkButton");
         checkBtn.innerHTML = "Continue";
         checkBtn.onclick = exitReviewMode;
@@ -237,6 +352,9 @@ function checkAnswers() {
         }
     }
 
+    // Hide dismiss buttons after check is revealed
+    document.querySelectorAll('.dismiss-btn').forEach(btn => btn.style.display = 'none');
+
     let listItem = document.getElementById('question-list-item-' + question.id);
     listItem.classList.remove("skipped");
 
@@ -249,9 +367,11 @@ function checkAnswers() {
         examiner.RemoveCurrentQuestion();
         listItem.classList.add("correct");
         console.log("Removed Question ID: " + question["id"]);
+        saveSession();
         if (examiner.IsEnd) {
             document.getElementById("checkButton").innerHTML = "LET'S GOO";
             document.getElementById("checkButton").onclick = function () {
+                clearSavedSession();
                 showEndscreen("Congratulations!", "You have answered all questions correctly!");
                 showStats(stats, examiner.questions);
             };
@@ -263,6 +383,7 @@ function checkAnswers() {
         stats.wrongAttempts++;
         stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
         listItem.classList.add("wrong");
+        saveSession();
         console.log("Not all correct");
     }
 
@@ -300,8 +421,6 @@ if (_uploadBtn) _uploadBtn.addEventListener('dragleave', () => {
     showConfirmscreen("title","You are about to load a DLC file from a url.<br>Are you sure you trust the source?",() => {
         loadFromURL(fileUrl);
     });
-    // if (confirm("You are about to load a DLC file from a url.\nAre you sure you trust the source?"))
-    //     loadFromURL(fileUrl);
 })();
 
 // Recent files
@@ -354,6 +473,7 @@ function renderRecentFiles() {
     panel.hidden = false;
     let list = document.getElementById('recentFilesList');
     list.innerHTML = '';
+    let savedSession = getSavedSession();
     recent.forEach(function (file, index) {
         let date = new Date(file.timestamp).toLocaleString('cs-CZ', {
             day: '2-digit', month: '2-digit', year: 'numeric',
@@ -374,13 +494,21 @@ function renderRecentFiles() {
         let delBtn = document.createElement('button');
         delBtn.className = 'recent-file-delete';
         delBtn.innerHTML = '&times;';
-        delBtn.title = 'Odstranit ze seznamu';
+        delBtn.title = 'Remove from list';
         delBtn.onclick = function (e) {
             e.stopPropagation();
             deleteFromRecent(index);
         };
 
         item.appendChild(nameSpan);
+
+        if (savedSession && savedSession.dlcName === file.name) {
+            let tag = document.createElement('span');
+            tag.className = 'recent-file-tag';
+            tag.textContent = 'In Progress';
+            item.appendChild(tag);
+        }
+
         item.appendChild(dateSpan);
         item.appendChild(delBtn);
         list.appendChild(item);
