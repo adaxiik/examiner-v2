@@ -303,6 +303,9 @@ p.answer.notselected:hover {
     bottom: 0;
     background: #222222;
     padding: 15px 0 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 #answersHolder .uk-icon {
@@ -635,7 +638,7 @@ p.answer.notselected:hover {
 
 .answer-wrapper p.answer {
     flex: 1;
-    margin: 1em 10px;
+    margin: 0 10px;
 }
 
 .answer-wrapper .uk-img-container {
@@ -644,23 +647,27 @@ p.answer.notselected:hover {
 
 .dismiss-btn {
     flex-shrink: 0;
-    background: none;
+    background: #363636;
     border: 1px solid #555;
-    color: #777;
-    border-radius: 50%;
-    width: 1.8rem;
-    height: 1.8rem;
+    color: #aaa;
+    border-radius: 0;
+    width: 2.4rem;
+    height: 2.4rem;
     line-height: 1;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 1rem;
     margin-right: 10px;
-    transition: color 0.1s, border-color 0.1s;
+    transition: color 0.1s, border-color 0.1s, background 0.1s;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .dismiss-btn:hover {
     color: #f44336;
     border-color: #f44336;
+    background: #3d2020;
 }
 
 p.answer.dismissed {
