@@ -102,7 +102,7 @@ class Examiner {
             if (question.question && question.question.type === 'text') {
                 setupTooltip(qElement, question.question.content);
             }
-            qElement.onclick = function() { goToQuestion(question.id); };
+            qElement.onclick = function() { playSound('navigate'); goToQuestion(question.id); };
             qListElement.appendChild(qElement);
         });
 

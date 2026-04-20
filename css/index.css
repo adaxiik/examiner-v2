@@ -564,6 +564,14 @@ p.answer.notselected:hover {
     background: #3d9ef7;
 }
 
+.sound-volume-pct {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    color: #888;
+    min-width: 36px;
+    text-align: right;
+}
+
 .timer.paused {
     color: #959595;
 }
