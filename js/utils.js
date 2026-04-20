@@ -310,18 +310,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-const UI_SOUNDS   = ['select', 'deselect', 'dismiss', 'pause', 'show', 'skip', 'prev', 'next'];
+const UI_SOUNDS   = ['select', 'dismiss', 'pause', 'show', 'navigate', 'next'];
 const EXAM_SOUNDS = ['correct', 'wrong', 'celebration'];
 const SOUND_NAMES = [...UI_SOUNDS, ...EXAM_SOUNDS];
 
 const SOUND_LABELS = {
-    select:      'Select answer',
-    deselect:    'Deselect answer',
+    select:      'Select / Deselect answer',
     dismiss:     'Dismiss answer',
     pause:       'Pause / resume',
     show:        'Show answer',
-    skip:        'Skip question',
-    prev:        'Previous question',
+    navigate:    'Skip / Previous',
     next:        'Next question',
     correct:     'Correct answer',
     wrong:       'Wrong answer',
@@ -381,7 +379,10 @@ function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
 function playSound(name) {
     if (_soundSettings.muted) return;
     if (UI_SOUNDS.includes(name) && !_soundSettings.groups.ui) return;
-    let settingsKey = (name === 'end' || name === 'finish') ? 'celebration' : name;
+    let settingsKey = name;
+    if (name === 'end'      || name === 'finish')   settingsKey = 'celebration';
+    if (name === 'deselect')                        settingsKey = 'select';
+    if (name === 'skip'     || name === 'prev')     settingsKey = 'navigate';
     if (!_soundSettings.sounds[settingsKey]) return;
     try {
         let ctx = _getAudioCtx();
