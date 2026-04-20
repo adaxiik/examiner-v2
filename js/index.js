@@ -343,8 +343,7 @@ function unmarkQuestion() {
     examiner.questionPool.AddQuestion(question);
 
     saveSession();
-    reviewMode = false;
-    nextQuestion();
+    goToQuestion(question.id);
 }
 
 /**

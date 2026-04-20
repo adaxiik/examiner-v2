@@ -491,6 +491,79 @@ p.answer.notselected:hover {
     background: white;
 }
 
+.sound-panel-group {
+    padding: 0.45rem 0.8rem;
+    background: #141414;
+}
+
+.sound-panel-group .sound-panel-label {
+    color: #ddd;
+    font-size: 0.83rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.sound-panel-sub {
+    padding: 0.35rem 0.8rem 0.35rem 2rem;
+}
+
+.sound-panel-sub .sound-panel-label {
+    color: #aaa;
+    font-size: 0.80rem;
+}
+
+.sound-panel-volume {
+    gap: 0.6rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.sound-panel-volume .sound-panel-label {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    color: #aaa;
+    min-width: 46px;
+}
+
+.sound-volume-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.sound-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #1e87f0;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sound-volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #1e87f0;
+    border: none;
+    cursor: pointer;
+}
+
+.sound-volume-slider:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.sound-volume-slider:not(:disabled)::-webkit-slider-thumb:hover {
+    background: #3d9ef7;
+}
+
 .timer.paused {
     color: #959595;
 }
