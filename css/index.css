@@ -385,6 +385,24 @@ p.answer.notselected:hover {
     color: white;
 }
 
+.sound-toggle-btn {
+    position: absolute;
+    right: 2.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #959595;
+    font-size: 1rem;
+    padding: 0.1rem 0.3rem;
+    line-height: 1;
+}
+
+.sound-toggle-btn:hover {
+    color: white;
+}
+
 .timer.paused {
     color: #959595;
 }
@@ -553,6 +571,24 @@ p.answer.notselected:hover {
     left: 0;
     width: 4rem;
     padding: 0.0rem;
+}
+
+.reload-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4rem;
+    height: 100%;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.reload-btn:hover {
+    color: #1e87f0;
 }
 
 .timer {
@@ -787,4 +823,16 @@ p.answer.dismissed {
 .modal-answer.correct {
     box-shadow: inset 0 0 0 2px #4caf50;
     color: #4caf50;
+}
+
+.unmark-btn {
+    margin: 0 10px;
+    color: #aaa !important;
+    border-color: #555;
+    font-size: 0.9rem;
+}
+
+.unmark-btn:hover {
+    color: #ffc107 !important;
+    border-color: #ffc107;
 }

@@ -173,7 +173,20 @@ function dismissAnswer(id) {
         }
     }
 
-    if (readOnly) return;
+    if (readOnly) {
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        if (listItem && listItem.classList.contains('correct')) {
+            const unmarkRow = document.createElement('div');
+            unmarkRow.className = 'self-assessment-btn-row';
+            const unmarkBtn = document.createElement('button');
+            unmarkBtn.innerHTML = "<span uk-icon='icon: refresh; ratio:1.5'></span> Odoznačit jako správnou";
+            unmarkBtn.classList.add('uk-button', 'uk-button-default', 'uk-width-1-1', 'unmark-btn');
+            unmarkBtn.onclick = function() { unmarkQuestion(); };
+            unmarkRow.appendChild(unmarkBtn);
+            answersHolder.appendChild(unmarkRow);
+        }
+        return;
+    }
 
     const btnRow = document.createElement('div');
     btnRow.className = 'self-assessment-btn-row';
@@ -190,11 +203,13 @@ function dismissAnswer(id) {
         console.log("Removed Question ID: " + question["id"]);
         saveSession();
         if (examiner.IsEnd) {
+            playSound('finish');
             clearSavedSession();
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
             showStats(stats, examiner.questions);
             return;
         }
+        playSound('correct');
         console.log("Correct");
         nextQuestion();
     };
@@ -207,6 +222,7 @@ function dismissAnswer(id) {
         listItem.classList.remove("skipped");
         listItem.classList.add("wrong");
         saveSession();
+        playSound('wrong');
         console.log("incorrect");
         nextQuestion();
     };

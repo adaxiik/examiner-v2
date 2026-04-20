@@ -298,6 +298,73 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// ── Sound system ──────────────────────────────────────────────────────────────
+
+let _audioCtx = null;
+let _soundMuted = (function() {
+    try { return localStorage.getItem('examiner_muted') === '1'; } catch { return false; }
+})();
+
+function _getAudioCtx() {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return _audioCtx;
+}
+
+function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
+    let osc = ctx.createOscillator();
+    let gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, startTime);
+    gain.gain.setValueAtTime(gainValue, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+}
+
+function playSound(name) {
+    if (_soundMuted) return;
+    try {
+        let ctx = _getAudioCtx();
+        let now = ctx.currentTime;
+        switch (name) {
+            case 'correct':
+                _playTone(523.25, 'sine', now,       0.15, 0.25, ctx); // C5
+                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25, ctx); // E5
+                _playTone(783.99, 'sine', now + 0.24, 0.25, 0.3,  ctx); // G5
+                break;
+            case 'wrong':
+                _playTone(220, 'sawtooth', now,       0.12, 0.2, ctx);
+                _playTone(180, 'sawtooth', now + 0.1, 0.18, 0.2, ctx);
+                break;
+            case 'next':
+                _playTone(440, 'sine', now, 0.07, 0.12, ctx);
+                break;
+            case 'finish':
+                _playTone(523.25, 'sine', now,        0.15, 0.28, ctx);
+                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.28, ctx);
+                _playTone(783.99, 'sine', now + 0.24, 0.15, 0.28, ctx);
+                _playTone(1046.5, 'sine', now + 0.36, 0.4,  0.35, ctx);
+                break;
+        }
+    } catch (e) {}
+}
+
+function toggleSound() {
+    _soundMuted = !_soundMuted;
+    try { localStorage.setItem('examiner_muted', _soundMuted ? '1' : '0'); } catch {}
+    let btn = document.getElementById('soundButton');
+    if (btn) btn.textContent = _soundMuted ? '🔇' : '🔊';
+}
+
+(function() {
+    let btn = document.getElementById('soundButton');
+    if (btn && _soundMuted) btn.textContent = '🔇';
+})();
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function createCorrectBtn(fn) {
     let correctButton = document.createElement("button");
     correctButton.innerHTML = "<span uk-icon='icon: check; ratio: 5.5'></span>";
