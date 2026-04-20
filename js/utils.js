@@ -414,9 +414,6 @@ function playSound(name) {
                 _playTone(180, 'sawtooth', now + 0.1, 0.18, 0.20 * v, ctx);
                 break;
             case 'end':
-                _playTone(440, 'sine', now,        0.12, 0.10 * v, ctx);
-                _playTone(330, 'sine', now + 0.10, 0.18, 0.10 * v, ctx);
-                break;
             case 'finish':
                 // Ascending arpeggio intro
                 _playTone(523.25, 'triangle', now + 0.00, 0.12, 0.28 * v, ctx); // C5
