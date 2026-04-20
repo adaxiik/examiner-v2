@@ -300,16 +300,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'correct', 'wrong', 'next', 'finish'];
+const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'skip', 'prev', 'correct', 'wrong', 'next', 'end', 'finish'];
 const SOUND_LABELS = {
-    select:   'Výběr odpovědi',
-    deselect: 'Odznačení odpovědi',
-    dismiss:  'Skrytí odpovědi',
-    pause:    'Pauza / pokračování',
-    correct:  'Správná odpověď',
-    wrong:    'Špatná odpověď',
-    next:     'Další otázka',
-    finish:   'Dokončení',
+    select:   'Select answer',
+    deselect: 'Deselect answer',
+    dismiss:  'Dismiss answer',
+    pause:    'Pause / resume',
+    skip:     'Skip question',
+    prev:     'Previous question',
+    correct:  'Correct answer',
+    wrong:    'Wrong answer',
+    next:     'Next question',
+    end:      'Finish exam (early)',
+    finish:   'Exam completed',
 };
 const SOUND_STORAGE_KEY = 'examiner_sounds';
 
@@ -368,6 +371,18 @@ function playSound(name) {
             case 'pause':
                 _playTone(380, 'sine', now, 0.05, 0.04, ctx);
                 break;
+            case 'skip':
+                _playTone(500, 'sine', now,        0.07, 0.07, ctx);
+                _playTone(380, 'sine', now + 0.06, 0.07, 0.07, ctx);
+                break;
+            case 'prev':
+                _playTone(380, 'sine', now,        0.07, 0.07, ctx);
+                _playTone(500, 'sine', now + 0.06, 0.07, 0.07, ctx);
+                break;
+            case 'end':
+                _playTone(440, 'sine', now,        0.12, 0.1, ctx);
+                _playTone(330, 'sine', now + 0.10, 0.18, 0.1, ctx);
+                break;
             case 'correct':
                 _playTone(523.25, 'sine', now,        0.15, 0.25, ctx);
                 _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25, ctx);
@@ -419,7 +434,7 @@ function _buildSoundPanel() {
     panel.innerHTML = '';
 
     let allRow = _makeSoundRow(
-        'Všechny zvuky',
+        'All sounds',
         !_soundSettings.muted,
         true,
         function(checked) {

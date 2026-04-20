@@ -56,7 +56,7 @@ function loadQuestions(contents, fileName, skipSessionCheck) {
         let saved = getSavedSession();
         if (saved && saved.dlcName === currentDlcName) {
             showConfirmscreen("title",
-                "Chcete pokračovat v předchozím zkoušení?<br><em>" + currentDlcName + "</em>",
+                "Continue previous attempt?<br><em>" + currentDlcName + "</em>",
                 function () { playGame(questions, saved); }
             );
             document.getElementById("cancelButton").onclick = function () {
@@ -224,7 +224,8 @@ function togglePause() {
 }
 
 function confirmFinish() {
-    showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
+    showConfirmscreen("examiner", "Are you sure you want to finish?<br>Remaining questions will be skipped.", function () {
+        playSound('end');
         clearSavedSession();
         showEndscreen("Finished", "The exam was terminated early.");
         showStats(stats, examiner.questions);
@@ -260,6 +261,7 @@ function prevQuestion() {
     if (questionHistory.length === 0) return;
     let prevId = questionHistory.pop();
     updatePrevButton();
+    playSound('prev');
     goToQuestion(prevId);
 }
 
@@ -275,6 +277,7 @@ function skipQuestion() {
     stats.skippedCount++;
     examiner.SkipCurrentQuestion();
     saveSession();
+    playSound('skip');
     nextQuestion();
 }
 
@@ -437,7 +440,7 @@ document.getElementById('reload-file-input').addEventListener('change', function
 function reloadQuestionsFromContent(contents) {
     if (!examiner) return;
     let newDlc;
-    try { newDlc = JSON.parse(contents); } catch (e) { alert('Nepodařilo se načíst soubor.'); return; }
+    try { newDlc = JSON.parse(contents); } catch (e) { alert('Could not parse file.'); return; }
     if (!VerifyDlc(newDlc)) return;
 
     let newById = {};
@@ -477,8 +480,8 @@ function reloadQuestionsFromContent(contents) {
     saveToRecent(newDlc.name || currentDlcName, contents);
     saveSession();
 
-    let msg = 'Otázky byly znovu načteny.';
-    if (added > 0) msg += ' Přidáno ' + added + ' nových otázek.';
+    let msg = 'Questions reloaded.';
+    if (added > 0) msg += ' ' + added + ' new question(s) added.';
     alert(msg);
 }
 

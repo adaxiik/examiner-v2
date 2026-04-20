@@ -64,7 +64,7 @@ function addAnswersToHolder(answers){
 
         let dismissBtn = document.createElement("button");
         dismissBtn.className = "dismiss-btn";
-        dismissBtn.title = "Označit jako špatnou";
+        dismissBtn.title = "Mark as incorrect";
         dismissBtn.innerHTML = "✕";
         (function(idx) {
             dismissBtn.onclick = function(e) {
@@ -182,7 +182,7 @@ function dismissAnswer(id) {
             const unmarkRow = document.createElement('div');
             unmarkRow.className = 'self-assessment-btn-row';
             const unmarkBtn = document.createElement('button');
-            unmarkBtn.innerHTML = "<span uk-icon='icon: refresh; ratio:1.5'></span> Odoznačit jako správnou";
+            unmarkBtn.innerHTML = "<span uk-icon='icon: refresh; ratio:1.5'></span> Unmark as correct";
             unmarkBtn.classList.add('uk-button', 'uk-button-default', 'uk-width-1-1', 'unmark-btn');
             unmarkBtn.onclick = function() { unmarkQuestion(); };
             unmarkRow.appendChild(unmarkBtn);
