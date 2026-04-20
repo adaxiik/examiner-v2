@@ -53,13 +53,17 @@
             <div class="uk-width-3-4@l uk-width-4-5@xl">
                 <div class="section-title">
                     <button class="exit-button uk-button uk-button-danger" type="button"
-                        onclick="(function(){showConfirmscreen('examiner','Are you sure you want to leave?<br>All your progress will be lost!',function(){window.location.reload();})})()"><a
+                        onclick="(function(){showConfirmscreen('examiner','Are you sure you want to leave?<br>Your progress will NOT be saved!',function(){clearSavedSession();window.location.reload();})})()"><a
                             class="uk-link-reset" uk-icon="icon: sign-out; ratio: 1.1;"></a></button>
 
 
                     <span id="dlc-name">
                         Examiner v2
                     </span>
+                    <button class="reload-btn" id="reloadBtn" title="Reload questions from file" onclick="document.getElementById('reload-file-input').click()">
+                        <span uk-icon="icon: refresh; ratio: 1.0;"></span>
+                    </button>
+                    <input type="file" accept=".dlc" id="reload-file-input" style="display:none">
                 </div>
 
                 <div id="questionHolder">
@@ -70,6 +74,7 @@
                     <button id="prevButton" class="uk-button uk-button-default" type="button" onclick="prevQuestion()" title="Previous question" disabled>PREV</button>
                     <button id="checkButton" class="uk-button uk-button-primary" type="button" onclick="checkAnswers()">Check</button>
                     <button id="skipButton" class="uk-button uk-button-default" type="button" onclick="skipQuestion()">Skip</button>
+                    <button id="unmarkButton" class="uk-button uk-button-default" type="button" onclick="unmarkQuestion()" hidden>Unmark</button>
                 </div>
                 <hr class="uk-divider-icon" id="qaSplit">
 
@@ -89,6 +94,8 @@
                 <div class="sidebar">
                     <span class="section-title darker">Time
                         <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pause/Continue">⏸</button>
+                        <button class="sound-toggle-btn" id="soundButton" onclick="toggleSound(event)" title="Zvuky"></button>
+                        <div id="soundPanel" class="sound-panel" hidden></div>
                     </span>
                     <span class="timer" id="timer">
                         <!-- JS: Timer --> 00 : 00
@@ -148,7 +155,7 @@
     <!-- Question preview modal (end screen) -->
     <div id="questionModal" hidden>
         <div id="questionModalContent">
-            <button id="questionModalClose" title="Zavřít">&times;</button>
+            <button id="questionModalClose" title="Close">&times;</button>
             <div id="questionModalBody"></div>
         </div>
     </div>

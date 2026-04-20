@@ -64,7 +64,7 @@ function addAnswersToHolder(answers){
 
         let dismissBtn = document.createElement("button");
         dismissBtn.className = "dismiss-btn";
-        dismissBtn.title = "Označit jako špatnou";
+        dismissBtn.title = "Mark as incorrect";
         dismissBtn.innerHTML = "✕";
         (function(idx) {
             dismissBtn.onclick = function(e) {
@@ -126,10 +126,12 @@ function select(id) {
     if (question["answers"][id]["selected"]) {
         question["answers"][id]["selected"] = false;
         document.getElementById("answer-" + id).classList.remove("selected");
+        playSound('deselect');
     }
     else {
         question["answers"][id]["selected"] = true;
         document.getElementById("answer-" + id).classList.add("selected");
+        playSound('select');
     }
 }
 
@@ -142,6 +144,7 @@ function dismissAnswer(id) {
         ans.selected = false;
         el.classList.remove("selected");
     }
+    playSound('dismiss');
 }
 
 
@@ -151,7 +154,10 @@ function dismissAnswer(id) {
  */
  function showAnswer(readOnly) {
     readOnly = readOnly === true;
-    if (!readOnly) hideCheckButton();
+    if (!readOnly) {
+        hideCheckButton();
+        playSound('show');
+    }
     const answersHolder = document.getElementById("answersHolder");
 
     for (let i = 0; i < question["answers"].length; i++) {
@@ -190,11 +196,13 @@ function dismissAnswer(id) {
         console.log("Removed Question ID: " + question["id"]);
         saveSession();
         if (examiner.IsEnd) {
+            playSound('finish');
             clearSavedSession();
             showEndscreen("Congratulations!", "You have answered all questions correctly!");
             showStats(stats, examiner.questions);
             return;
         }
+        playSound('correct');
         console.log("Correct");
         nextQuestion();
     };
@@ -207,6 +215,7 @@ function dismissAnswer(id) {
         listItem.classList.remove("skipped");
         listItem.classList.add("wrong");
         saveSession();
+        playSound('wrong');
         console.log("incorrect");
         nextQuestion();
     };

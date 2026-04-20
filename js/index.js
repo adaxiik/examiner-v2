@@ -56,7 +56,7 @@ function loadQuestions(contents, fileName, skipSessionCheck) {
         let saved = getSavedSession();
         if (saved && saved.dlcName === currentDlcName) {
             showConfirmscreen("title",
-                "Chcete pokračovat v předchozím zkoušení?<br><em>" + currentDlcName + "</em>",
+                "Continue previous attempt?<br><em>" + currentDlcName + "</em>",
                 function () { playGame(questions, saved); }
             );
             document.getElementById("cancelButton").onclick = function () {
@@ -220,10 +220,12 @@ function togglePause() {
         document.getElementById('timer').classList.add('paused');
     }
     syncPauseState();
+    playSound('pause');
 }
 
 function confirmFinish() {
-    showConfirmscreen("examiner", "Opravdu chcete ukončit zkoušení?<br>Zbývající otázky budou vynechány.", function () {
+    showConfirmscreen("examiner", "Are you sure you want to finish?<br>Remaining questions will be skipped.", function () {
+        playSound('end');
         clearSavedSession();
         showEndscreen("Finished", "The exam was terminated early.");
         showStats(stats, examiner.questions);
@@ -259,6 +261,7 @@ function prevQuestion() {
     if (questionHistory.length === 0) return;
     let prevId = questionHistory.pop();
     updatePrevButton();
+    playSound('prev');
     goToQuestion(prevId);
 }
 
@@ -274,6 +277,7 @@ function skipQuestion() {
     stats.skippedCount++;
     examiner.SkipCurrentQuestion();
     saveSession();
+    playSound('skip');
     nextQuestion();
 }
 
@@ -310,12 +314,35 @@ function goToQuestion(questionId) {
         let checkBtn = document.getElementById("checkButton");
         checkBtn.innerHTML = "Continue";
         checkBtn.onclick = exitReviewMode;
+
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        if (question.type === 'self-assessment' && listItem && listItem.classList.contains('correct')) {
+            showUnmarkButton();
+        }
     } else {
         questionStartElapsed = examiner.totalElapsed;
     }
 }
 
 function exitReviewMode() {
+    reviewMode = false;
+    nextQuestion();
+}
+
+function unmarkQuestion() {
+    if (!question) return;
+    let listItem = document.getElementById('question-list-item-' + question.id);
+
+    let wasCorrected = listItem.classList.contains('correct') && listItem.classList.contains('wrong');
+    listItem.classList.remove('correct', 'wrong', 'skipped', 'active');
+
+    stats.correctAttempts = Math.max(0, stats.correctAttempts - 1);
+    if (wasCorrected) stats.correctedCount = Math.max(0, stats.correctedCount - 1);
+
+    // Put the question back into the pool
+    examiner.questionPool.AddQuestion(question);
+
+    saveSession();
     reviewMode = false;
     nextQuestion();
 }
@@ -369,6 +396,7 @@ function checkAnswers() {
         console.log("Removed Question ID: " + question["id"]);
         saveSession();
         if (examiner.IsEnd) {
+            playSound('finish');
             document.getElementById("checkButton").innerHTML = "LET'S GOO";
             document.getElementById("checkButton").onclick = function () {
                 clearSavedSession();
@@ -377,6 +405,7 @@ function checkAnswers() {
             };
             return;
         }
+        playSound('correct');
         console.log("All correct");
     }
     else {
@@ -384,10 +413,11 @@ function checkAnswers() {
         stats.questionWrongCounts[question.id] = (stats.questionWrongCounts[question.id] || 0) + 1;
         listItem.classList.add("wrong");
         saveSession();
+        playSound('wrong');
         console.log("Not all correct");
     }
 
-    document.getElementById("checkButton").onclick = nextQuestion;
+    document.getElementById("checkButton").onclick = function() { playSound('next'); nextQuestion(); };
     document.getElementById("checkButton").innerHTML = "Next - " + (examiner.GetQuestionCount) + " to go";
 }
 
@@ -399,6 +429,66 @@ function checkAnswers() {
 
 document.getElementById('file-input')
     .addEventListener('change', readSingleFile, false);
+
+document.getElementById('reload-file-input').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = function(ev) {
+        reloadQuestionsFromContent(ev.target.result);
+    };
+    reader.readAsText(file);
+    // Reset so the same file can be reloaded again
+    e.target.value = '';
+}, false);
+
+function reloadQuestionsFromContent(contents) {
+    if (!examiner) return;
+    let newDlc;
+    try { newDlc = JSON.parse(contents); } catch (e) { alert('Could not parse file.'); return; }
+    if (!VerifyDlc(newDlc)) return;
+
+    let newById = {};
+    newDlc.data.forEach(q => { newById[q.id] = q; });
+
+    let existingIds = new Set(examiner.questions.map(q => q.id));
+
+    // Update content of matching questions in-place
+    examiner.questions.forEach(q => {
+        if (newById[q.id]) {
+            Object.assign(q, newById[q.id]);
+        }
+    });
+
+    // Add brand-new questions (not in current session)
+    let added = 0;
+    newDlc.data.forEach(q => {
+        if (!existingIds.has(q.id)) {
+            examiner.questions.push(q);
+            // Add to question list sidebar
+            let qListElement = document.getElementById('questionList');
+            let num = qListElement.children.length + 1;
+            let qElement = document.createElement('div');
+            qElement.innerText = num;
+            qElement.id = 'question-list-item-' + q.id;
+            if (q.question && q.question.type === 'text') setupTooltip(qElement, q.question.content);
+            qElement.onclick = function() { goToQuestion(q.id); };
+            qListElement.appendChild(qElement);
+            added++;
+        }
+    });
+    // If new questions were added, ensure examiner knows there are more to process
+    if (added > 0) {
+        examiner.end = false;
+    }
+
+    saveToRecent(newDlc.name || currentDlcName, contents);
+    saveSession();
+
+    let msg = 'Questions reloaded.';
+    if (added > 0) msg += ' ' + added + ' new question(s) added.';
+    alert(msg);
+}
 
 // Drag and drop area
 document.addEventListener('dragenter', () => {
