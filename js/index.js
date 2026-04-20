@@ -471,7 +471,7 @@ function reloadQuestionsFromContent(contents) {
             qElement.innerText = num;
             qElement.id = 'question-list-item-' + q.id;
             if (q.question && q.question.type === 'text') setupTooltip(qElement, q.question.content);
-            qElement.onclick = function() { goToQuestion(q.id); };
+            qElement.onclick = function() { playSound('navigate'); goToQuestion(q.id); };
             qListElement.appendChild(qElement);
             added++;
         }
