@@ -154,7 +154,10 @@ function dismissAnswer(id) {
  */
  function showAnswer(readOnly) {
     readOnly = readOnly === true;
-    if (!readOnly) hideCheckButton();
+    if (!readOnly) {
+        hideCheckButton();
+        playSound('show');
+    }
     const answersHolder = document.getElementById("answersHolder");
 
     for (let i = 0; i < question["answers"].length; i++) {
@@ -176,20 +179,7 @@ function dismissAnswer(id) {
         }
     }
 
-    if (readOnly) {
-        let listItem = document.getElementById('question-list-item-' + question.id);
-        if (listItem && listItem.classList.contains('correct')) {
-            const unmarkRow = document.createElement('div');
-            unmarkRow.className = 'self-assessment-btn-row';
-            const unmarkBtn = document.createElement('button');
-            unmarkBtn.innerHTML = "<span uk-icon='icon: refresh; ratio:1.5'></span> Unmark as correct";
-            unmarkBtn.classList.add('uk-button', 'uk-button-default', 'uk-width-1-1', 'unmark-btn');
-            unmarkBtn.onclick = function() { unmarkQuestion(); };
-            unmarkRow.appendChild(unmarkBtn);
-            answersHolder.appendChild(unmarkRow);
-        }
-        return;
-    }
+    if (readOnly) return;
 
     const btnRow = document.createElement('div');
     btnRow.className = 'self-assessment-btn-row';

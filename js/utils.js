@@ -60,15 +60,25 @@ function showExaminer(dlcname) {
 function hideCheckButton() {
     document.getElementById("checkButton").hidden = true;
     document.getElementById("skipButton").hidden = true;
+    document.getElementById("unmarkButton").hidden = true;
 }
 
 function showCheckButton() {
     document.getElementById("checkButton").hidden = false;
     document.getElementById("skipButton").hidden = false;
+    document.getElementById("unmarkButton").hidden = true;
 }
 
 function hideSkipButton() {
     document.getElementById("skipButton").hidden = true;
+}
+
+function showUnmarkButton() {
+    document.getElementById("unmarkButton").hidden = false;
+}
+
+function hideUnmarkButton() {
+    document.getElementById("unmarkButton").hidden = true;
 }
 
 /**
@@ -300,12 +310,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'skip', 'prev', 'correct', 'wrong', 'next', 'end', 'finish'];
+const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'show', 'skip', 'prev', 'correct', 'wrong', 'next', 'end', 'finish'];
 const SOUND_LABELS = {
     select:   'Select answer',
     deselect: 'Deselect answer',
     dismiss:  'Dismiss answer',
     pause:    'Pause / resume',
+    show:     'Show answer',
     skip:     'Skip question',
     prev:     'Previous question',
     correct:  'Correct answer',
@@ -370,6 +381,10 @@ function playSound(name) {
                 break;
             case 'pause':
                 _playTone(380, 'sine', now, 0.05, 0.04, ctx);
+                break;
+            case 'show':
+                _playTone(440, 'sine', now,        0.08, 0.12, ctx);
+                _playTone(554, 'sine', now + 0.07, 0.10, 0.12, ctx);
                 break;
             case 'skip':
                 _playTone(500, 'sine', now,        0.07, 0.07, ctx);

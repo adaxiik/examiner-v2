@@ -633,7 +633,8 @@ p.answer.notselected:hover {
     width: auto;
 }
 
-#skipButton {
+#skipButton,
+#unmarkButton {
     white-space: nowrap;
     font-size: 0.85rem;
     padding: 0 14px;
@@ -913,14 +914,3 @@ p.answer.dismissed {
     color: #4caf50;
 }
 
-.unmark-btn {
-    margin: 0 10px;
-    color: #aaa !important;
-    border-color: #555;
-    font-size: 0.9rem;
-}
-
-.unmark-btn:hover {
-    color: #ffc107 !important;
-    border-color: #ffc107;
-}

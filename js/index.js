@@ -314,6 +314,11 @@ function goToQuestion(questionId) {
         let checkBtn = document.getElementById("checkButton");
         checkBtn.innerHTML = "Continue";
         checkBtn.onclick = exitReviewMode;
+
+        let listItem = document.getElementById('question-list-item-' + question.id);
+        if (question.type === 'self-assessment' && listItem && listItem.classList.contains('correct')) {
+            showUnmarkButton();
+        }
     } else {
         questionStartElapsed = examiner.totalElapsed;
     }
