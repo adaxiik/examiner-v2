@@ -515,13 +515,20 @@ function _makeVolumeRow(disabled) {
     slider.value = Math.round(_soundSettings.volume * 100);
     slider.className = 'sound-volume-slider';
     slider.disabled = disabled;
+
+    let pct = document.createElement('span');
+    pct.className = 'sound-volume-pct';
+    pct.textContent = slider.value + '%';
+
     slider.oninput = function() {
         _soundSettings.volume = parseInt(this.value) / 100;
+        pct.textContent = this.value + '%';
         _saveSoundSettings();
     };
 
     row.appendChild(label);
     row.appendChild(slider);
+    row.appendChild(pct);
     return row;
 }
 
