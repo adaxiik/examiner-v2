@@ -413,6 +413,10 @@ function playSound(name) {
                 _playTone(380, 'sine', now,        0.07, 0.07 * v, ctx);
                 _playTone(500, 'sine', now + 0.06, 0.07, 0.07 * v, ctx);
                 break;
+            case 'navigate':
+                _playTone(460, 'sine', now, 0.06, 0.07 * v, ctx);
+                break;
+                break;
             case 'next':
                 _playTone(440, 'sine', now, 0.07, 0.12 * v, ctx);
                 break;
