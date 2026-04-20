@@ -311,22 +311,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // ── Sound system ──────────────────────────────────────────────────────────────
 
 const UI_SOUNDS   = ['select', 'deselect', 'dismiss', 'pause', 'show', 'skip', 'prev', 'next'];
-const EXAM_SOUNDS = ['correct', 'wrong', 'end', 'finish'];
+const EXAM_SOUNDS = ['correct', 'wrong', 'celebration'];
 const SOUND_NAMES = [...UI_SOUNDS, ...EXAM_SOUNDS];
 
 const SOUND_LABELS = {
-    select:   'Select answer',
-    deselect: 'Deselect answer',
-    dismiss:  'Dismiss answer',
-    pause:    'Pause / resume',
-    show:     'Show answer',
-    skip:     'Skip question',
-    prev:     'Previous question',
-    next:     'Next question',
-    correct:  'Correct answer',
-    wrong:    'Wrong answer',
-    end:      'Finish exam (early)',
-    finish:   'Exam completed',
+    select:      'Select answer',
+    deselect:    'Deselect answer',
+    dismiss:     'Dismiss answer',
+    pause:       'Pause / resume',
+    show:        'Show answer',
+    skip:        'Skip question',
+    prev:        'Previous question',
+    next:        'Next question',
+    correct:     'Correct answer',
+    wrong:       'Wrong answer',
+    celebration: 'Celebration music',
 };
 const SOUND_STORAGE_KEY = 'examiner_sounds';
 
@@ -371,7 +370,8 @@ function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
 function playSound(name) {
     if (_soundSettings.muted) return;
     if (UI_SOUNDS.includes(name) && !_soundSettings.groups.ui) return;
-    if (!_soundSettings.sounds[name]) return;
+    let settingsKey = (name === 'end' || name === 'finish') ? 'celebration' : name;
+    if (!_soundSettings.sounds[settingsKey]) return;
     try {
         let ctx = _getAudioCtx();
         let now = ctx.currentTime;
