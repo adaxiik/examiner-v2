@@ -623,6 +623,8 @@ function _makeSoundRow(label, checked, enabled, onChange) {
 
 (function() {
     _updateSoundBtn();
+    let panel = document.getElementById('soundPanel');
+    if (panel) panel.addEventListener('click', e => e.stopPropagation());
     document.addEventListener('click', function(e) {
         if (!_soundPanelOpen) return;
         let btn = document.getElementById('soundButton');
