@@ -310,7 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'show', 'skip', 'prev', 'correct', 'wrong', 'next', 'end', 'finish'];
+const UI_SOUNDS   = ['select', 'deselect', 'dismiss', 'pause', 'show', 'skip', 'prev', 'next'];
+const EXAM_SOUNDS = ['correct', 'wrong', 'end', 'finish'];
+const SOUND_NAMES = [...UI_SOUNDS, ...EXAM_SOUNDS];
+
 const SOUND_LABELS = {
     select:   'Select answer',
     deselect: 'Deselect answer',
@@ -319,9 +322,9 @@ const SOUND_LABELS = {
     show:     'Show answer',
     skip:     'Skip question',
     prev:     'Previous question',
+    next:     'Next question',
     correct:  'Correct answer',
     wrong:    'Wrong answer',
-    next:     'Next question',
     end:      'Finish exam (early)',
     finish:   'Exam completed',
 };
@@ -332,12 +335,14 @@ let _soundSettings = (function() {
         let s = JSON.parse(localStorage.getItem(SOUND_STORAGE_KEY));
         if (s && typeof s.muted === 'boolean' && s.sounds) {
             SOUND_NAMES.forEach(n => { if (!(n in s.sounds)) s.sounds[n] = true; });
+            if (!s.groups)            s.groups = { ui: true };
+            if (s.volume === undefined) s.volume = 1.0;
             return s;
         }
     } catch {}
     let sounds = {};
     SOUND_NAMES.forEach(n => { sounds[n] = true; });
-    return { muted: false, sounds };
+    return { muted: false, volume: 1.0, groups: { ui: true }, sounds };
 })();
 
 function _saveSoundSettings() {
@@ -365,56 +370,75 @@ function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
 
 function playSound(name) {
     if (_soundSettings.muted) return;
+    if (UI_SOUNDS.includes(name) && !_soundSettings.groups.ui) return;
     if (!_soundSettings.sounds[name]) return;
     try {
         let ctx = _getAudioCtx();
         let now = ctx.currentTime;
+        let v = _soundSettings.volume;
         switch (name) {
             case 'select':
-                _playTone(600, 'sine', now, 0.05, 0.1, ctx);
+                _playTone(600, 'sine', now, 0.05, 0.10 * v, ctx);
                 break;
             case 'deselect':
-                _playTone(400, 'sine', now, 0.04, 0.04, ctx);
+                _playTone(400, 'sine', now, 0.04, 0.04 * v, ctx);
                 break;
             case 'dismiss':
-                _playTone(320, 'sine', now, 0.06, 0.04, ctx);
+                _playTone(320, 'sine', now, 0.06, 0.04 * v, ctx);
                 break;
             case 'pause':
-                _playTone(380, 'sine', now, 0.05, 0.04, ctx);
+                _playTone(380, 'sine', now, 0.05, 0.04 * v, ctx);
                 break;
             case 'show':
-                _playTone(440, 'sine', now,        0.08, 0.12, ctx);
-                _playTone(554, 'sine', now + 0.07, 0.10, 0.12, ctx);
+                _playTone(440, 'sine', now,        0.08, 0.12 * v, ctx);
+                _playTone(554, 'sine', now + 0.07, 0.10, 0.12 * v, ctx);
                 break;
             case 'skip':
-                _playTone(500, 'sine', now,        0.07, 0.07, ctx);
-                _playTone(380, 'sine', now + 0.06, 0.07, 0.07, ctx);
+                _playTone(500, 'sine', now,        0.07, 0.07 * v, ctx);
+                _playTone(380, 'sine', now + 0.06, 0.07, 0.07 * v, ctx);
                 break;
             case 'prev':
-                _playTone(380, 'sine', now,        0.07, 0.07, ctx);
-                _playTone(500, 'sine', now + 0.06, 0.07, 0.07, ctx);
-                break;
-            case 'end':
-                _playTone(440, 'sine', now,        0.12, 0.1, ctx);
-                _playTone(330, 'sine', now + 0.10, 0.18, 0.1, ctx);
-                break;
-            case 'correct':
-                _playTone(523.25, 'sine', now,        0.15, 0.25, ctx);
-                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25, ctx);
-                _playTone(783.99, 'sine', now + 0.24, 0.25, 0.3,  ctx);
-                break;
-            case 'wrong':
-                _playTone(220, 'sawtooth', now,       0.12, 0.2, ctx);
-                _playTone(180, 'sawtooth', now + 0.1, 0.18, 0.2, ctx);
+                _playTone(380, 'sine', now,        0.07, 0.07 * v, ctx);
+                _playTone(500, 'sine', now + 0.06, 0.07, 0.07 * v, ctx);
                 break;
             case 'next':
-                _playTone(440, 'sine', now, 0.07, 0.12, ctx);
+                _playTone(440, 'sine', now, 0.07, 0.12 * v, ctx);
+                break;
+            case 'correct':
+                _playTone(523.25, 'sine', now,        0.15, 0.25 * v, ctx);
+                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25 * v, ctx);
+                _playTone(783.99, 'sine', now + 0.24, 0.25, 0.30 * v, ctx);
+                break;
+            case 'wrong':
+                _playTone(220, 'sawtooth', now,       0.12, 0.20 * v, ctx);
+                _playTone(180, 'sawtooth', now + 0.1, 0.18, 0.20 * v, ctx);
+                break;
+            case 'end':
+                _playTone(440, 'sine', now,        0.12, 0.10 * v, ctx);
+                _playTone(330, 'sine', now + 0.10, 0.18, 0.10 * v, ctx);
                 break;
             case 'finish':
-                _playTone(523.25, 'sine', now,        0.15, 0.28, ctx);
-                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.28, ctx);
-                _playTone(783.99, 'sine', now + 0.24, 0.15, 0.28, ctx);
-                _playTone(1046.5, 'sine', now + 0.36, 0.4,  0.35, ctx);
+                // Ascending arpeggio intro
+                _playTone(523.25, 'triangle', now + 0.00, 0.12, 0.28 * v, ctx); // C5
+                _playTone(659.25, 'triangle', now + 0.11, 0.12, 0.28 * v, ctx); // E5
+                _playTone(783.99, 'triangle', now + 0.22, 0.12, 0.28 * v, ctx); // G5
+                _playTone(1046.5, 'sine',     now + 0.33, 0.28, 0.32 * v, ctx); // C6 peak
+                // Bridge
+                _playTone(783.99, 'triangle', now + 0.65, 0.10, 0.22 * v, ctx); // G5
+                _playTone(880.00, 'triangle', now + 0.75, 0.10, 0.22 * v, ctx); // A5
+                _playTone(987.77, 'triangle', now + 0.85, 0.10, 0.22 * v, ctx); // B5
+                _playTone(1046.5, 'sine',     now + 0.95, 0.10, 0.25 * v, ctx); // C6
+                _playTone(1174.7, 'sine',     now + 1.05, 0.10, 0.25 * v, ctx); // D6
+                // Final triumphant note
+                _playTone(1318.5, 'sine',     now + 1.15, 0.65, 0.32 * v, ctx); // E6
+                // Bass support on peak
+                _playTone(261.63, 'sine',     now + 0.33, 0.28, 0.08 * v, ctx); // C4
+                _playTone(392.00, 'sine',     now + 0.33, 0.28, 0.06 * v, ctx); // G4
+                // Final chord
+                _playTone(261.63, 'sine',     now + 1.15, 0.75, 0.10 * v, ctx); // C4
+                _playTone(329.63, 'sine',     now + 1.15, 0.75, 0.08 * v, ctx); // E4
+                _playTone(392.00, 'sine',     now + 1.15, 0.75, 0.08 * v, ctx); // G4
+                _playTone(523.25, 'sine',     now + 1.15, 0.75, 0.10 * v, ctx); // C5
                 break;
         }
     } catch (e) {}
@@ -443,40 +467,88 @@ function toggleSound(event) {
     }
 }
 
+function _makeDivider() {
+    let d = document.createElement('div');
+    d.className = 'sound-panel-divider';
+    return d;
+}
+
+function _makeVolumeRow(disabled) {
+    let row = document.createElement('div');
+    row.className = 'sound-panel-row sound-panel-volume' + (disabled ? ' disabled' : '');
+
+    let label = document.createElement('span');
+    label.className = 'sound-panel-label';
+    label.textContent = 'Volume';
+
+    let slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = '100';
+    slider.value = Math.round(_soundSettings.volume * 100);
+    slider.className = 'sound-volume-slider';
+    slider.disabled = disabled;
+    slider.oninput = function() {
+        _soundSettings.volume = parseInt(this.value) / 100;
+        _saveSoundSettings();
+    };
+
+    row.appendChild(label);
+    row.appendChild(slider);
+    return row;
+}
+
 function _buildSoundPanel() {
     let panel = document.getElementById('soundPanel');
     if (!panel) return;
     panel.innerHTML = '';
+    let masterOff = _soundSettings.muted;
 
-    let allRow = _makeSoundRow(
-        'All sounds',
-        !_soundSettings.muted,
-        true,
-        function(checked) {
-            _soundSettings.muted = !checked;
-            _saveSoundSettings();
-            _updateSoundBtn();
-            _buildSoundPanel();
-        }
-    );
+    // Master toggle
+    let allRow = _makeSoundRow('All sounds', !masterOff, true, function(checked) {
+        _soundSettings.muted = !checked;
+        _saveSoundSettings();
+        _updateSoundBtn();
+        _buildSoundPanel();
+    });
     allRow.classList.add('sound-panel-all');
     panel.appendChild(allRow);
 
-    let hr = document.createElement('div');
-    hr.className = 'sound-panel-divider';
-    panel.appendChild(hr);
+    // Volume slider
+    panel.appendChild(_makeDivider());
+    panel.appendChild(_makeVolumeRow(masterOff));
 
-    SOUND_NAMES.forEach(function(name) {
-        let row = _makeSoundRow(
-            SOUND_LABELS[name],
-            _soundSettings.sounds[name],
-            !_soundSettings.muted,
-            function(checked) {
-                _soundSettings.sounds[name] = checked;
-                _saveSoundSettings();
-                _updateSoundBtn();
-            }
-        );
+    // UI / Click sounds group
+    panel.appendChild(_makeDivider());
+    let uiOn = _soundSettings.groups.ui;
+    let uiEnabled = !masterOff;
+    let uiGroupRow = _makeSoundRow('UI / Click sounds', uiOn, uiEnabled, function(checked) {
+        _soundSettings.groups.ui = checked;
+        _saveSoundSettings();
+        _buildSoundPanel();
+    });
+    uiGroupRow.classList.add('sound-panel-group');
+    panel.appendChild(uiGroupRow);
+
+    UI_SOUNDS.forEach(function(name) {
+        let subEnabled = uiEnabled && uiOn;
+        let row = _makeSoundRow(SOUND_LABELS[name], _soundSettings.sounds[name], subEnabled, function(checked) {
+            _soundSettings.sounds[name] = checked;
+            _saveSoundSettings();
+            _updateSoundBtn();
+        });
+        row.classList.add('sound-panel-sub');
+        panel.appendChild(row);
+    });
+
+    // Exam sounds (individual)
+    panel.appendChild(_makeDivider());
+    EXAM_SOUNDS.forEach(function(name) {
+        let row = _makeSoundRow(SOUND_LABELS[name], _soundSettings.sounds[name], !masterOff, function(checked) {
+            _soundSettings.sounds[name] = checked;
+            _saveSoundSettings();
+            _updateSoundBtn();
+        });
         panel.appendChild(row);
     });
 }
