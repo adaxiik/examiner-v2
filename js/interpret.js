@@ -130,6 +130,7 @@ function select(id) {
     else {
         question["answers"][id]["selected"] = true;
         document.getElementById("answer-" + id).classList.add("selected");
+        playSound('select');
     }
 }
 

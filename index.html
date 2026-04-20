@@ -93,7 +93,8 @@
                 <div class="sidebar">
                     <span class="section-title darker">Time
                         <button class="pause-toggle-btn" id="pauseButton" onclick="togglePause()" title="Pause/Continue">⏸</button>
-                        <button class="sound-toggle-btn" id="soundButton" onclick="toggleSound()" title="Zapnout/Vypnout zvuky">🔊</button>
+                        <button class="sound-toggle-btn" id="soundButton" onclick="toggleSound(event)" title="Zvuky"></button>
+                        <div id="soundPanel" class="sound-panel" hidden></div>
                     </span>
                     <span class="timer" id="timer">
                         <!-- JS: Timer --> 00 : 00

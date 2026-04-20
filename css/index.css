@@ -394,13 +394,101 @@ p.answer.notselected:hover {
     border: none;
     cursor: pointer;
     color: #959595;
-    font-size: 1rem;
     padding: 0.1rem 0.3rem;
-    line-height: 1;
+    line-height: 0;
+    display: flex;
+    align-items: center;
 }
 
-.sound-toggle-btn:hover {
+.sound-toggle-btn:hover,
+.sound-toggle-btn.muted {
     color: white;
+}
+
+.sound-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 200;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 0 0 4px 4px;
+    min-width: 190px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.sound-panel-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0.8rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
+}
+
+.sound-panel-row:hover {
+    background: #242424;
+}
+
+.sound-panel-row.disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.sound-panel-all {
+    padding: 0.55rem 0.8rem;
+}
+
+.sound-panel-label {
+    color: #ccc;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.sound-panel-all .sound-panel-label {
+    color: #eee;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.sound-panel-divider {
+    height: 1px;
+    background: #2e2e2e;
+    margin: 0.1rem 0;
+}
+
+.sound-switch {
+    flex-shrink: 0;
+    display: inline-block;
+    width: 28px;
+    height: 16px;
+    background: #444;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sound-switch::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #888;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.15s, background 0.15s;
+}
+
+.sound-switch.on {
+    background: #1e87f0;
+}
+
+.sound-switch.on::after {
+    left: 14px;
+    background: white;
 }
 
 .timer.paused {

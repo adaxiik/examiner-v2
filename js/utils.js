@@ -300,11 +300,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-let _audioCtx = null;
-let _soundMuted = (function() {
-    try { return localStorage.getItem('examiner_muted') === '1'; } catch { return false; }
+const SOUND_NAMES = ['select', 'correct', 'wrong', 'next', 'finish'];
+const SOUND_LABELS = {
+    select:  'Výběr odpovědi',
+    correct: 'Správná odpověď',
+    wrong:   'Špatná odpověď',
+    next:    'Další otázka',
+    finish:  'Dokončení',
+};
+const SOUND_STORAGE_KEY = 'examiner_sounds';
+
+let _soundSettings = (function() {
+    try {
+        let s = JSON.parse(localStorage.getItem(SOUND_STORAGE_KEY));
+        if (s && typeof s.muted === 'boolean' && s.sounds) {
+            SOUND_NAMES.forEach(n => { if (!(n in s.sounds)) s.sounds[n] = true; });
+            return s;
+        }
+    } catch {}
+    let sounds = {};
+    SOUND_NAMES.forEach(n => { sounds[n] = true; });
+    return { muted: false, sounds };
 })();
 
+function _saveSoundSettings() {
+    try { localStorage.setItem(SOUND_STORAGE_KEY, JSON.stringify(_soundSettings)); } catch {}
+}
+
+let _audioCtx = null;
 function _getAudioCtx() {
     if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     return _audioCtx;
@@ -324,15 +347,19 @@ function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
 }
 
 function playSound(name) {
-    if (_soundMuted) return;
+    if (_soundSettings.muted) return;
+    if (!_soundSettings.sounds[name]) return;
     try {
         let ctx = _getAudioCtx();
         let now = ctx.currentTime;
         switch (name) {
+            case 'select':
+                _playTone(600, 'sine', now, 0.05, 0.1, ctx);
+                break;
             case 'correct':
-                _playTone(523.25, 'sine', now,       0.15, 0.25, ctx); // C5
-                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25, ctx); // E5
-                _playTone(783.99, 'sine', now + 0.24, 0.25, 0.3,  ctx); // G5
+                _playTone(523.25, 'sine', now,        0.15, 0.25, ctx);
+                _playTone(659.25, 'sine', now + 0.12, 0.15, 0.25, ctx);
+                _playTone(783.99, 'sine', now + 0.24, 0.25, 0.3,  ctx);
                 break;
             case 'wrong':
                 _playTone(220, 'sawtooth', now,       0.12, 0.2, ctx);
@@ -351,16 +378,112 @@ function playSound(name) {
     } catch (e) {}
 }
 
-function toggleSound() {
-    _soundMuted = !_soundMuted;
-    try { localStorage.setItem('examiner_muted', _soundMuted ? '1' : '0'); } catch {}
+const _SVG_SOUND_ON  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const _SVG_SOUND_OFF = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+
+function _updateSoundBtn() {
     let btn = document.getElementById('soundButton');
-    if (btn) btn.textContent = _soundMuted ? '🔇' : '🔊';
+    if (!btn) return;
+    let allOff = _soundSettings.muted || SOUND_NAMES.every(n => !_soundSettings.sounds[n]);
+    btn.innerHTML = allOff ? _SVG_SOUND_OFF : _SVG_SOUND_ON;
+    btn.classList.toggle('muted', allOff);
+}
+
+let _soundPanelOpen = false;
+
+function toggleSound(event) {
+    if (event) event.stopPropagation();
+    _soundPanelOpen = !_soundPanelOpen;
+    let panel = document.getElementById('soundPanel');
+    if (panel) {
+        panel.hidden = !_soundPanelOpen;
+        if (_soundPanelOpen) _buildSoundPanel();
+    }
+}
+
+function _buildSoundPanel() {
+    let panel = document.getElementById('soundPanel');
+    if (!panel) return;
+    panel.innerHTML = '';
+
+    let allRow = _makeSoundRow(
+        'Všechny zvuky',
+        !_soundSettings.muted,
+        true,
+        function(checked) {
+            _soundSettings.muted = !checked;
+            _saveSoundSettings();
+            _updateSoundBtn();
+            _buildSoundPanel();
+        }
+    );
+    allRow.classList.add('sound-panel-all');
+    panel.appendChild(allRow);
+
+    let hr = document.createElement('div');
+    hr.className = 'sound-panel-divider';
+    panel.appendChild(hr);
+
+    SOUND_NAMES.forEach(function(name) {
+        let row = _makeSoundRow(
+            SOUND_LABELS[name],
+            _soundSettings.sounds[name],
+            !_soundSettings.muted,
+            function(checked) {
+                _soundSettings.sounds[name] = checked;
+                _saveSoundSettings();
+                _updateSoundBtn();
+            }
+        );
+        panel.appendChild(row);
+    });
+}
+
+function _makeSoundRow(label, checked, enabled, onChange) {
+    let row = document.createElement('label');
+    row.className = 'sound-panel-row';
+    if (!enabled) row.classList.add('disabled');
+
+    let sw = document.createElement('span');
+    sw.className = 'sound-switch' + (checked ? ' on' : '');
+
+    let input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = checked;
+    input.disabled = !enabled;
+    input.style.display = 'none';
+    input.onchange = function() { onChange(this.checked); };
+
+    sw.onclick = function(e) {
+        e.preventDefault();
+        if (!enabled) return;
+        input.checked = !input.checked;
+        sw.classList.toggle('on', input.checked);
+        input.dispatchEvent(new Event('change'));
+    };
+
+    let span = document.createElement('span');
+    span.className = 'sound-panel-label';
+    span.textContent = label;
+
+    row.appendChild(sw);
+    row.appendChild(input);
+    row.appendChild(span);
+    return row;
 }
 
 (function() {
-    let btn = document.getElementById('soundButton');
-    if (btn && _soundMuted) btn.textContent = '🔇';
+    _updateSoundBtn();
+    document.addEventListener('click', function(e) {
+        if (!_soundPanelOpen) return;
+        let btn = document.getElementById('soundButton');
+        let panel = document.getElementById('soundPanel');
+        if (!btn || !panel) return;
+        if (!btn.contains(e.target) && !panel.contains(e.target)) {
+            _soundPanelOpen = false;
+            panel.hidden = true;
+        }
+    });
 })();
 
 // ─────────────────────────────────────────────────────────────────────────────
