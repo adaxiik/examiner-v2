@@ -349,8 +349,19 @@ function _saveSoundSettings() {
 }
 
 let _audioCtx = null;
+let _masterNode = null;
 function _getAudioCtx() {
-    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!_audioCtx) {
+        _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let comp = _audioCtx.createDynamicsCompressor();
+        comp.threshold.value = -6;
+        comp.knee.value = 3;
+        comp.ratio.value = 4;
+        comp.attack.value = 0.001;
+        comp.release.value = 0.15;
+        comp.connect(_audioCtx.destination);
+        _masterNode = comp;
+    }
     return _audioCtx;
 }
 
@@ -358,7 +369,7 @@ function _playTone(frequency, type, startTime, duration, gainValue, ctx) {
     let osc = ctx.createOscillator();
     let gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(_masterNode);
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
     gain.gain.setValueAtTime(gainValue, startTime);
@@ -415,27 +426,46 @@ function playSound(name) {
                 break;
             case 'end':
             case 'finish':
-                // Ascending arpeggio intro
-                _playTone(523.25, 'triangle', now + 0.00, 0.12, 0.28 * v, ctx); // C5
-                _playTone(659.25, 'triangle', now + 0.11, 0.12, 0.28 * v, ctx); // E5
-                _playTone(783.99, 'triangle', now + 0.22, 0.12, 0.28 * v, ctx); // G5
-                _playTone(1046.5, 'sine',     now + 0.33, 0.28, 0.32 * v, ctx); // C6 peak
-                // Bridge
-                _playTone(783.99, 'triangle', now + 0.65, 0.10, 0.22 * v, ctx); // G5
-                _playTone(880.00, 'triangle', now + 0.75, 0.10, 0.22 * v, ctx); // A5
-                _playTone(987.77, 'triangle', now + 0.85, 0.10, 0.22 * v, ctx); // B5
-                _playTone(1046.5, 'sine',     now + 0.95, 0.10, 0.25 * v, ctx); // C6
-                _playTone(1174.7, 'sine',     now + 1.05, 0.10, 0.25 * v, ctx); // D6
-                // Final triumphant note
-                _playTone(1318.5, 'sine',     now + 1.15, 0.65, 0.32 * v, ctx); // E6
-                // Bass support on peak
-                _playTone(261.63, 'sine',     now + 0.33, 0.28, 0.08 * v, ctx); // C4
-                _playTone(392.00, 'sine',     now + 0.33, 0.28, 0.06 * v, ctx); // G4
-                // Final chord
-                _playTone(261.63, 'sine',     now + 1.15, 0.75, 0.10 * v, ctx); // C4
-                _playTone(329.63, 'sine',     now + 1.15, 0.75, 0.08 * v, ctx); // E4
-                _playTone(392.00, 'sine',     now + 1.15, 0.75, 0.08 * v, ctx); // G4
-                _playTone(523.25, 'sine',     now + 1.15, 0.75, 0.10 * v, ctx); // C5
+                // ── Section 1: Fanfare run (0.00–0.60s) ──────────────────
+                _playTone(523.25, 'triangle', now+0.00, 0.10, 0.26*v, ctx); // C5
+                _playTone(659.25, 'triangle', now+0.10, 0.10, 0.26*v, ctx); // E5
+                _playTone(783.99, 'triangle', now+0.20, 0.10, 0.26*v, ctx); // G5
+                _playTone(1046.5, 'sine',     now+0.30, 0.32, 0.30*v, ctx); // C6 peak
+                // Bass pad
+                _playTone(130.81, 'sine',     now+0.00, 0.65, 0.14*v, ctx); // C3
+                _playTone(392.00, 'sine',     now+0.00, 0.65, 0.08*v, ctx); // G4
+                _playTone(523.25, 'sine',     now+0.00, 0.65, 0.07*v, ctx); // C5 low harmony
+
+                // ── Section 2: Rising melody (0.70–1.45s) ────────────────
+                _playTone(783.99, 'triangle', now+0.70, 0.10, 0.22*v, ctx); // G5
+                _playTone(880.00, 'triangle', now+0.80, 0.10, 0.22*v, ctx); // A5
+                _playTone(987.77, 'triangle', now+0.90, 0.10, 0.24*v, ctx); // B5
+                _playTone(1046.5, 'sine',     now+1.00, 0.12, 0.26*v, ctx); // C6
+                _playTone(1174.7, 'sine',     now+1.12, 0.12, 0.26*v, ctx); // D6
+                _playTone(1318.5, 'sine',     now+1.24, 0.22, 0.28*v, ctx); // E6
+                // Sustained harmony underneath
+                _playTone(523.25, 'triangle', now+0.70, 0.80, 0.09*v, ctx); // C5
+                _playTone(659.25, 'triangle', now+0.70, 0.80, 0.07*v, ctx); // E5
+                _playTone(130.81, 'sine',     now+0.70, 0.80, 0.10*v, ctx); // C3
+
+                // ── Section 3: Triplet climax (1.50–1.85s) ───────────────
+                _playTone(1318.5, 'sine',     now+1.50, 0.10, 0.26*v, ctx); // E6
+                _playTone(1174.7, 'sine',     now+1.60, 0.09, 0.23*v, ctx); // D6
+                _playTone(1318.5, 'sine',     now+1.69, 0.09, 0.24*v, ctx); // E6
+                _playTone(1567.98,'sine',     now+1.78, 0.09, 0.26*v, ctx); // G6
+
+                // ── Section 4: Grand finale chord (1.92–3.20s) ───────────
+                // Staggered arpeggio → held chord (low to high)
+                _playTone(130.81, 'sine',     now+1.92, 1.28, 0.16*v, ctx); // C3
+                _playTone(261.63, 'sine',     now+1.94, 1.26, 0.11*v, ctx); // C4
+                _playTone(329.63, 'sine',     now+1.96, 1.24, 0.09*v, ctx); // E4
+                _playTone(392.00, 'sine',     now+1.98, 1.22, 0.09*v, ctx); // G4
+                _playTone(523.25, 'sine',     now+2.00, 1.20, 0.11*v, ctx); // C5
+                _playTone(659.25, 'sine',     now+2.02, 1.18, 0.09*v, ctx); // E5
+                _playTone(783.99, 'sine',     now+2.04, 1.16, 0.09*v, ctx); // G5
+                _playTone(1046.5, 'sine',     now+2.06, 1.14, 0.11*v, ctx); // C6
+                _playTone(1318.5, 'sine',     now+2.08, 1.12, 0.13*v, ctx); // E6
+                _playTone(1567.98,'sine',     now+2.10, 1.10, 0.16*v, ctx); // G6 top
                 break;
         }
     } catch (e) {}
@@ -481,7 +511,7 @@ function _makeVolumeRow(disabled) {
     let slider = document.createElement('input');
     slider.type = 'range';
     slider.min = '0';
-    slider.max = '100';
+    slider.max = '200';
     slider.value = Math.round(_soundSettings.volume * 100);
     slider.className = 'sound-volume-slider';
     slider.disabled = disabled;
