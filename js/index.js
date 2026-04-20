@@ -220,6 +220,7 @@ function togglePause() {
         document.getElementById('timer').classList.add('paused');
     }
     syncPauseState();
+    playSound('pause');
 }
 
 function confirmFinish() {

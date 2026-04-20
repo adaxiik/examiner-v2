@@ -126,6 +126,7 @@ function select(id) {
     if (question["answers"][id]["selected"]) {
         question["answers"][id]["selected"] = false;
         document.getElementById("answer-" + id).classList.remove("selected");
+        playSound('deselect');
     }
     else {
         question["answers"][id]["selected"] = true;
@@ -143,6 +144,7 @@ function dismissAnswer(id) {
         ans.selected = false;
         el.classList.remove("selected");
     }
+    playSound('dismiss');
 }
 
 

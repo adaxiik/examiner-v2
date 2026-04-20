@@ -300,13 +300,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Sound system ──────────────────────────────────────────────────────────────
 
-const SOUND_NAMES = ['select', 'correct', 'wrong', 'next', 'finish'];
+const SOUND_NAMES = ['select', 'deselect', 'dismiss', 'pause', 'correct', 'wrong', 'next', 'finish'];
 const SOUND_LABELS = {
-    select:  'Výběr odpovědi',
-    correct: 'Správná odpověď',
-    wrong:   'Špatná odpověď',
-    next:    'Další otázka',
-    finish:  'Dokončení',
+    select:   'Výběr odpovědi',
+    deselect: 'Odznačení odpovědi',
+    dismiss:  'Skrytí odpovědi',
+    pause:    'Pauza / pokračování',
+    correct:  'Správná odpověď',
+    wrong:    'Špatná odpověď',
+    next:     'Další otázka',
+    finish:   'Dokončení',
 };
 const SOUND_STORAGE_KEY = 'examiner_sounds';
 
@@ -355,6 +358,15 @@ function playSound(name) {
         switch (name) {
             case 'select':
                 _playTone(600, 'sine', now, 0.05, 0.1, ctx);
+                break;
+            case 'deselect':
+                _playTone(400, 'sine', now, 0.04, 0.04, ctx);
+                break;
+            case 'dismiss':
+                _playTone(320, 'sine', now, 0.06, 0.04, ctx);
+                break;
+            case 'pause':
+                _playTone(380, 'sine', now, 0.05, 0.04, ctx);
                 break;
             case 'correct':
                 _playTone(523.25, 'sine', now,        0.15, 0.25, ctx);
