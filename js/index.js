@@ -684,6 +684,107 @@ function renderRecentFiles() {
 
 renderRecentFiles();
 
+// ── Data transfer (export / import all data) ─────────────────────────────────
+// Bundles every piece of persisted state — sessions, ratings, recent files,
+// wheel state and all preferences — into a single JSON backup so it can be
+// moved between browsers or devices. Everything the app stores lives under the
+// "examiner_" localStorage prefix, so we snapshot whatever matches rather than
+// hard-coding individual keys (new keys are picked up automatically).
+
+const DATA_BACKUP_FILETYPE = 'examiner-backup';
+const DATA_KEY_PREFIX = 'examiner_';
+
+function triggerDownload(filename, content, mime) {
+    let blob = new Blob([content], { type: mime });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportAllData() {
+    let data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key && key.startsWith(DATA_KEY_PREFIX)) {
+            data[key] = localStorage.getItem(key);
+        }
+    }
+
+    if (Object.keys(data).length === 0) {
+        alert('There is no saved data to export yet.');
+        return;
+    }
+
+    let backup = {
+        filetype: DATA_BACKUP_FILETYPE,
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        data: data,
+    };
+
+    let stamp = new Date().toISOString().slice(0, 10);
+    triggerDownload('examiner-backup-' + stamp + '.json',
+        JSON.stringify(backup, null, 2), 'application/json');
+    if (typeof playSound === 'function') playSound('select');
+}
+
+function importAllData(contents) {
+    let backup;
+    try {
+        backup = JSON.parse(contents);
+    } catch (e) {
+        alert('Could not read backup file — it is not valid JSON.');
+        return;
+    }
+
+    if (!backup || backup.filetype !== DATA_BACKUP_FILETYPE || typeof backup.data !== 'object') {
+        alert('This file is not an Examiner data backup.');
+        return;
+    }
+
+    let keys = Object.keys(backup.data).filter(k => k.startsWith(DATA_KEY_PREFIX));
+    if (keys.length === 0) {
+        alert('The backup file contains no data to import.');
+        return;
+    }
+
+    showConfirmscreen('title',
+        'Import ' + keys.length + ' data item(s)?<br>This will overwrite your current data.',
+        function () {
+            // Remove existing app data so the import is a clean restore.
+            let existing = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith(DATA_KEY_PREFIX)) existing.push(key);
+            }
+            existing.forEach(k => localStorage.removeItem(k));
+
+            keys.forEach(k => {
+                let v = backup.data[k];
+                if (typeof v === 'string') localStorage.setItem(k, v);
+            });
+
+            window.location.reload();
+        });
+}
+
+document.getElementById('import-data-input').addEventListener('change', function (e) {
+    let file = e.target.files[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = function (ev) {
+        importAllData(ev.target.result);
+    };
+    reader.readAsText(file);
+    // Reset so the same file can be selected again
+    e.target.value = '';
+}, false);
+
 // Timer
 setInterval(() => {
     if (examiner != null) {

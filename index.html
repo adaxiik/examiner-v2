@@ -14,7 +14,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit.min.css" />
-    <link rel="stylesheet" href="css/index.css?v=25">
+    <link rel="stylesheet" href="css/index.css?v=26">
     <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@2/dist/zero-md.min.js"></script>
 </head>
 
@@ -45,6 +45,20 @@
         <div id="recentFilesPanel" hidden>
             <div class="recent-files-header">Recently Opened</div>
             <div id="recentFilesList"></div>
+        </div>
+
+        <div id="dataTransferBar">
+            <button type="button" class="data-transfer-btn" id="exportDataBtn"
+                title="Download all your data (sessions, ratings, recent files, settings) as a backup file"
+                onclick="exportAllData()">
+                <span uk-icon="icon: download; ratio: 0.85;"></span> Export data
+            </button>
+            <button type="button" class="data-transfer-btn" id="importDataBtn"
+                title="Restore data from a backup file"
+                onclick="document.getElementById('import-data-input').click()">
+                <span uk-icon="icon: upload; ratio: 0.85;"></span> Import data
+            </button>
+            <input type="file" accept=".json,.examiner" id="import-data-input" style="display:none">
         </div>
     </div>
 
@@ -334,7 +348,7 @@
     <script src="js/examiner.js?v=7"></script>
     <script src="js/interpret.js?v=8"></script>
     <script src="js/wheel.js?v=28"></script>
-    <script src="js/index.js?v=10"></script>
+    <script src="js/index.js?v=11"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/js/uikit.min.js"
         integrity="sha512-OZ9Sq7ecGckkqgxa8t/415BRNoz2GIInOsu8Qjj99r9IlBCq2XJlm9T9z//D4W1lrl+xCdXzq0EYfMo8DZJ+KA=="
